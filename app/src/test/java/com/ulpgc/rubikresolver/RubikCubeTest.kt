@@ -1,6 +1,6 @@
 package com.ulpgc.rubikresolver
 
-import com.ulpgc.rubikresolver.data.RubikCube
+import com.ulpgc.rubikresolver.model.RubikCube
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
