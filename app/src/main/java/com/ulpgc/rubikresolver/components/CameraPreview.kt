@@ -1,4 +1,4 @@
-package com.ulpgc.rubikresolver
+package com.ulpgc.rubikresolver.components
 
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
