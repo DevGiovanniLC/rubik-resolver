@@ -9,5 +9,4 @@ data class Cube(
     var rightColor: Color = Color.Black,
     var upColor: Color = Color.Black,
     var downColor: Color = Color.Black
-) {
-}
+)

@@ -3,13 +3,13 @@ package com.ulpgc.rubikresolver.opengl.renderer
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
+import androidx.compose.ui.graphics.Color
+import com.ulpgc.rubikresolver.model.Cube
 import com.ulpgc.rubikresolver.opengl.objects.GLCube
-import com.ulpgc.rubikresolver.opengl.objects.Square
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 class SolverRenderer : GLSurfaceView.Renderer {
-    private lateinit var mSquare: Square
     private lateinit var mCube: GLCube
     private val viewMatrix = FloatArray(16)
     private val vPMatrix = FloatArray(16)
@@ -17,10 +17,23 @@ class SolverRenderer : GLSurfaceView.Renderer {
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig?) {
         // Set the background frame color
         GLES20.glClearColor(0.157f, 0.627f, 1.0f, 1.0f)
-/*
-        mSquare = Square()
-*/
-        mCube = GLCube()
+
+        val red = Color(0.8f, 0.0f, 0.0f, 1.0f)
+        val orange = Color(1.0f, 0.5f, 0.0f, 1.0f)
+        val blue = Color(0.0f, 0.0f, 0.8f, 1.0f)
+        val green = Color(0.0f, 0.8f, 0.0f, 1.0f)
+        val yellow = Color(1.0f, 1.0f, 0.0f, 1.0f)
+        val white = Color(1.0f, 1.0f, 1.0f, 1.0f)
+
+        val cube = Cube(
+            frontColor = red,
+            backColor = orange,
+            leftColor = blue,
+            rightColor = green,
+            upColor = yellow,
+            downColor = white
+        )
+        mCube = GLCube(cube)
     }
 
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -35,6 +48,7 @@ class SolverRenderer : GLSurfaceView.Renderer {
     override fun onDrawFrame(unused: GL10) {
         // Redraw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT)
 
         // Set the camera position (View matrix)
         Matrix.setLookAtM(viewMatrix, 0, 3.0f, 2.4f, 3.0f, 0f, 0f, 0f, 0f, 1f, 0f)
@@ -42,9 +56,6 @@ class SolverRenderer : GLSurfaceView.Renderer {
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
 
-/*
-        mSquare.draw(vPMatrix)
-*/
         mCube.draw(vPMatrix)
     }
 }
