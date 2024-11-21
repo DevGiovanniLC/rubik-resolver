@@ -1,10 +1,12 @@
 package com.ulpgc.rubikresolver.opengl.objects
 
 import android.opengl.GLES20
+import androidx.compose.ui.graphics.Color
+import com.ulpgc.rubikresolver.model.Cube
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class GLCube {
+class GLCube(private val cubeModel: Cube) {
     private var coordinatesPerVertex = 3
     private val vertexCoordinates = floatArrayOf(
         // front
@@ -43,14 +45,20 @@ class GLCube {
         0.5f, -0.5f, -0.5f,     // bottom right back
         -0.5f, -0.5f, -0.5f     // bottom left back
     )
-    private var color = floatArrayOf(0.63671875f, 0.76953125f, 0.22265625f, 1.0f)
-    private var colorBlack = floatArrayOf(0.0f, 0.0f, 0.0f, 1.0f)
+
+    private val faceIndex: HashMap<String, Int> = hashMapOf(
+        "front" to 0,
+        "back" to 4,
+        "left" to 8,
+        "right" to 12,
+        "top" to 16,
+        "bottom" to 20
+    )
 
     private var mPositionHandle: Int = 0
     private var mColorHandle: Int = 0
     private var mvpMatrixHandle: Int = 0
 
-    private val vertexCount: Int = vertexCoordinates.size / coordinatesPerVertex
     private val vertexStride: Int = coordinatesPerVertex * 4 // 4 bytes per vertex
 
     private var mProgram: Int
@@ -76,6 +84,7 @@ class GLCube {
         """.trimIndent()
     }
 
+    @Suppress("SpellCheckingInspection")
     private fun getFragmentShaderCode(): String {
         return """
         precision mediump float;
@@ -114,25 +123,41 @@ class GLCube {
                 vertexBuffer
             )
         }
-/*
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor").also { colorHandle ->
-            GLES20.glUniform4fv(colorHandle, 1, color, 0)
-        }
 
+        paintCube(mvpMatrix, cubeModel)
+        drawContour(mvpMatrix)
+        GLES20.glDisableVertexAttribArray(mPositionHandle)
+    }
+
+    private fun paintCube(mvpMatrix: FloatArray, cubeModel: Cube) {
+        GLES20.glEnable(GLES20.GL_POLYGON_OFFSET_FILL)
+        paintFace(mvpMatrix, cubeModel.frontColor, faceIndex["front"]!!)
+        paintFace(mvpMatrix, cubeModel.backColor, faceIndex["back"]!!)
+        paintFace(mvpMatrix, cubeModel.leftColor, faceIndex["left"]!!)
+        paintFace(mvpMatrix, cubeModel.rightColor, faceIndex["right"]!!)
+        paintFace(mvpMatrix, cubeModel.upColor, faceIndex["top"]!!)
+        paintFace(mvpMatrix, cubeModel.downColor, faceIndex["bottom"]!!)
+        GLES20.glDisableVertexAttribArray(GLES20.GL_POLYGON_OFFSET_FILL)
+    }
+
+    private fun paintFace(mvpMatrix: FloatArray, faceColor: Color, colorIndex: Int) {
+        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor").also { colorHandle ->
+            GLES20.glUniform4fv(colorHandle, 1, composeColor(faceColor), 0)
+        }
         mvpMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix").also {
             GLES20.glUniformMatrix4fv(it, 1, false, mvpMatrix, 0)
         }
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, colorIndex, 4)
+    }
 
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, vertexCount)
-*/
-
+    private fun drawContour(mvpMatrix: FloatArray) {
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST)
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor").also { colorHandle ->
-            GLES20.glUniform4fv(colorHandle, 1, colorBlack, 0)
+            GLES20.glUniform4fv(colorHandle, 1, composeColor(Color.Black), 0)
         }
         mvpMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix").also {
             GLES20.glUniformMatrix4fv(it, 1, false, mvpMatrix, 0)
         }
-
         GLES20.glLineWidth(10.0f)
         GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 0, 4)
         GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 4, 4)
@@ -140,6 +165,11 @@ class GLCube {
         GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 12, 4)
         GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 16, 4)
         GLES20.glDrawArrays(GLES20.GL_LINE_LOOP, 20, 4)
-        GLES20.glDisableVertexAttribArray(mPositionHandle)
+    }
+
+    private fun composeColor(color: Color): FloatArray {
+        return floatArrayOf(
+            color.red, color.green, color.blue, color.alpha
+        )
     }
 }
