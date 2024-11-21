@@ -3,19 +3,24 @@ package com.ulpgc.rubikresolver.opengl.renderer
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
+import com.ulpgc.rubikresolver.opengl.objects.GLCube
 import com.ulpgc.rubikresolver.opengl.objects.Square
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 class SolverRenderer : GLSurfaceView.Renderer {
     private lateinit var mSquare: Square
+    private lateinit var mCube: GLCube
     private val viewMatrix = FloatArray(16)
     private val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig?) {
         // Set the background frame color
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
+        GLES20.glClearColor(0.157f, 0.627f, 1.0f, 1.0f)
+/*
         mSquare = Square()
+*/
+        mCube = GLCube()
     }
 
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -24,7 +29,7 @@ class SolverRenderer : GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height)
         val aspectRatio: Float = width.toFloat() / height.toFloat()
 
-        Matrix.frustumM(projectionMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, 3f, 7f)
+        Matrix.frustumM(projectionMatrix, 0, -aspectRatio, aspectRatio, -1f, 1f, 0.5f, 10.0f)
     }
 
     override fun onDrawFrame(unused: GL10) {
@@ -32,11 +37,14 @@ class SolverRenderer : GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, 7f, 0f, 0f, 0f, 0f, 1f, 0f)
+        Matrix.setLookAtM(viewMatrix, 0, 3.0f, 2.4f, 3.0f, 0f, 0f, 0f, 0f, 1f, 0f)
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
 
+/*
         mSquare.draw(vPMatrix)
+*/
+        mCube.draw(vPMatrix)
     }
 }
