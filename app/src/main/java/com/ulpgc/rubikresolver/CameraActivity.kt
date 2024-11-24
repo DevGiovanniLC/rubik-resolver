@@ -1,6 +1,7 @@
 package com.ulpgc.rubikresolver
 
 import android.Manifest
+import androidx.compose.ui.graphics.Color
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -23,9 +24,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.remember
@@ -59,8 +63,8 @@ class CameraActivity : ComponentActivity() {
                             ResolutionSelector.Builder()
                                 .setResolutionStrategy(
                                     ResolutionStrategy(
-                                        Size(1920, 1080),
-                                        ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER
+                                        Size(640, 480),
+                                        ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER
                                     )
                                 )
                                 .build()
@@ -72,9 +76,7 @@ class CameraActivity : ComponentActivity() {
                 BottomSheetScaffold(
                     scaffoldState = scaffoldState,
                     sheetPeekHeight = 0.dp,
-                    sheetContent = {
-
-                    }
+                    sheetContent = {}
                 ){
                     padding ->
                     Box(modifier = Modifier
@@ -97,14 +99,16 @@ class CameraActivity : ComponentActivity() {
                         ) {
                             Button(
                                 onClick = {
-                                    takephoto(
+                                    takePhoto(
                                         controller = controller,
                                         onPhotoTaken = { bitmap ->
                                             onTakePhoto(bitmap)
-                                        }
+                                        },
                                     )
                                 },
-                                modifier = Modifier.padding(8.dp)
+                                modifier = Modifier.size(50.dp),
+                                shape = CircleShape,
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
                             ) {
 
                             }
@@ -133,7 +137,7 @@ class CameraActivity : ComponentActivity() {
     }
 
 
-    private fun takephoto(
+    private fun takePhoto(
         controller: LifecycleCameraController,
         onPhotoTaken: (Bitmap) -> Unit
     ) {
