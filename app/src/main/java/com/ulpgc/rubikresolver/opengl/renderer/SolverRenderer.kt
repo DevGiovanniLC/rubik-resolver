@@ -3,20 +3,26 @@ package com.ulpgc.rubikresolver.opengl.renderer
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
-import android.os.SystemClock
 import com.ulpgc.rubikresolver.model.RubikCube
+import com.ulpgc.rubikresolver.model.RubikCube.Face.*
 import com.ulpgc.rubikresolver.opengl.objects.GLRubikCube
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 class SolverRenderer : GLSurfaceView.Renderer {
-    private lateinit var mCube: GLRubikCube
+    private lateinit var glCube: GLRubikCube
     private val viewMatrix = FloatArray(16)
     private val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
+    private var animate = false
+    private var animationFace = FRONT
+    private var animateCounterClockwise = 1
+    private var rotationAngle = 0f
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig?) {
         // Set the background frame color
         GLES20.glClearColor(0.157f, 0.627f, 1.0f, 1.0f)
+        // Set the camera position (View matrix)
+        Matrix.setLookAtM(viewMatrix, 0, 4.0f, 4.0f, 4.0f, 2.0f, 2.0f, 2.0f, 0f, 1.0f, 0f)
 
         val mockCube = RubikCube.RubikBuilder
             .setFace(
@@ -24,39 +30,46 @@ class SolverRenderer : GLSurfaceView.Renderer {
                     arrayOf('R', 'R', 'R'),
                     arrayOf('R', 'R', 'R'),
                     arrayOf('R', 'R', 'R')
-                ))
+                )
+            )
             .setFace(
                 RubikCube.Face.BACK, arrayOf(
                     arrayOf('O', 'O', 'O'),
                     arrayOf('O', 'O', 'O'),
                     arrayOf('O', 'O', 'O')
-                ))
+                )
+            )
             .setFace(
                 RubikCube.Face.LEFT, arrayOf(
                     arrayOf('B', 'B', 'B'),
                     arrayOf('B', 'B', 'B'),
                     arrayOf('B', 'B', 'B')
-                ))
+                )
+            )
             .setFace(
                 RubikCube.Face.RIGHT, arrayOf(
                     arrayOf('G', 'G', 'G'),
                     arrayOf('G', 'G', 'G'),
                     arrayOf('G', 'G', 'G')
-                ))
+                )
+            )
             .setFace(
                 RubikCube.Face.TOP, arrayOf(
                     arrayOf('Y', 'Y', 'Y'),
                     arrayOf('Y', 'Y', 'Y'),
                     arrayOf('Y', 'Y', 'Y')
-                ))
+                )
+            )
             .setFace(
                 RubikCube.Face.BOTTOM, arrayOf(
                     arrayOf('W', 'W', 'W'),
                     arrayOf('W', 'W', 'W'),
                     arrayOf('W', 'W', 'W')
-                ))
+                )
+            )
             .build()
-        mCube = GLRubikCube(mockCube)
+        glCube = GLRubikCube(mockCube)
+        performMove('D', true)
     }
 
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -73,22 +86,40 @@ class SolverRenderer : GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT)
 
-        // Set the camera position (View matrix)
-        Matrix.setLookAtM(viewMatrix, 0, 4.0f, 4.0f, 4.0f, 2.0f, 2.0f, 2.0f, 0f, 1.0f, 0f)
-
-        val rotationMatrix = FloatArray(16)
-        val time = SystemClock.uptimeMillis() % 4000L
-        val angleInDegrees = 0.09f * time.toInt() % 360
-        Matrix.setRotateM(rotationMatrix, 0, angleInDegrees, 0f, 1f, 0f)
-
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
-        Matrix.multiplyMM(vPMatrix, 0, vPMatrix, 0, rotationMatrix, 0)
-        val translateMatrix = FloatArray(16)
-        Matrix.setIdentityM(translateMatrix, 0)
-        Matrix.translateM(translateMatrix, 0, 0.0f, 2.0f, 0.0f)
 
-        mCube.draw(vPMatrix)
+        animate()
+        glCube.draw(vPMatrix)
+    }
+
+    private fun animate() {
+        if (!animate) {
+            return
+        }
+        if (rotationAngle >= 90) {
+            animate = false
+            rotationAngle = 0f
+            return
+        }
+        rotationAngle += 1.5f
+        glCube.rotateFace(animationFace, rotationAngle * animateCounterClockwise)
+    }
+
+    fun performMove(move: Char, clockwise: Boolean = false) {
+        animate = true
+        animateCounterClockwise = if (clockwise) -1 else 1
+        animationFace = when (move) {
+            'F' -> FRONT
+            'B' -> BACK
+            'L' -> LEFT
+            'R' -> RIGHT
+            'U' -> TOP
+            'D' -> BOTTOM
+            else -> {
+                animate = false; FRONT
+            }
+        }
     }
 
 }
