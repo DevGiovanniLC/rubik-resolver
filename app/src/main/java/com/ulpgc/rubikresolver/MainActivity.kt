@@ -139,6 +139,10 @@ class MainActivity : ComponentActivity() {
                 onClick = { launcher.launch(Intent(context, CheckCubeActivity::class.java)) }
             )
 
+            MainButton(
+                text = "OpenGL",
+                onClick = { launcher.launch(Intent(context, SolverActivity::class.java)) }
+            )
 
             Spacer(modifier = Modifier.weight(1f))
 

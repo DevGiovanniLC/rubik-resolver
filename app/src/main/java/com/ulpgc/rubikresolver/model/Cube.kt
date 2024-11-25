@@ -2,7 +2,7 @@ package com.ulpgc.rubikresolver.model
 
 import androidx.compose.ui.graphics.Color
 
-data class Cube(
+class Cube(
     var frontColor: Color = Color.Black,
     var backColor: Color = Color.Black,
     var leftColor: Color = Color.Black,

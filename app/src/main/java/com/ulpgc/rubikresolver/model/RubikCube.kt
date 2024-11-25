@@ -14,8 +14,7 @@ data class RubikCube private constructor (private val cube: Array<Array<Array<Ch
     object RubikBuilder {
         private var cube: Array<Array<Array<Char>>> = Array(6) { Array(3) { Array(3) { ' ' } } }
 
-        fun setFace(faceName: Face, faceValue: Array<Array<Char>>): RubikBuilder{
-
+        fun setFace(faceName: Face, faceValue: Array<Array<Char>>): RubikBuilder {
             if (faceValue.size != 3 || faceValue[0].size != 3) {
                 throw RubikFaceError("Face value must be a 3x3 array")
             }
@@ -80,22 +79,23 @@ data class RubikCube private constructor (private val cube: Array<Array<Array<Ch
             return this
         }
 
-        internal fun buildUncheckedRubikCube(): UncheckedRubikCube {
+        private fun buildUncheckedRubikCube(): UncheckedRubikCube {
             return RubikCube(cube)
         }
 
 
         fun build(): RubikCube {
 
-
             RubikCubeChecker(buildUncheckedRubikCube())
 
-
+            cube.forEach { face ->
+                if (face.any { row -> row.any { it == ' ' } }) {
+                    throw RubikCubeError("One or more faces contain empty values or null")
+                }
+            }
             return RubikCube(cube)
         }
     }
-
-
 
     enum class Face(val value: Int) {
         UP(0),  // U ->  white
