@@ -24,32 +24,35 @@ data class RubikCube private constructor (private val cube: Array<Array<Array<Ch
         }
     }
 
-
+    fun getFace(face: Face): Array<Array<Char>> {
+        return cube[face.value]
+    }
 
     object RubikBuilder {
         private val cube: Array<Array<Array<Char>>> = Array(6) { Array(3) { Array(3) { ' ' } } }
 
-        fun setFace(faceName: RubikCube.Face, faceValue: Array<Array<Char>>){
+        fun setFace(faceName: Face, faceValue: Array<Array<Char>>): RubikBuilder {
 
             if (faceValue.size != 3 || faceValue[0].size != 3) {
                 throw RubikFaceError("Face value must be a 3x3 array")
             }
 
-            if (faceValue.all { row -> row.all { it == ' ' || it == null } }) {
+            if (faceValue.all { row -> row.all { it == ' ' } }) {
                 throw RubikFaceError("Face cannot be filled with empty values or null")
             }
 
-            if (faceValue.any { row -> row.any { it == null } }) {
+            if (faceValue.any { row -> row.any { false } }) {
                 throw RubikFaceError("Face cannot contain null values")
             }
 
             this.cube[faceName.value] = faceValue
+            return this
         }
 
         fun build(): RubikCube {
 
             cube.forEach { face ->
-                if (face.any { row -> row.any { it == ' ' || it == null } }) {
+                if (face.any { row -> row.any { it == ' ' } }) {
                     throw RubikCubeError("One or more faces contain empty values or null")
                 }
             }
