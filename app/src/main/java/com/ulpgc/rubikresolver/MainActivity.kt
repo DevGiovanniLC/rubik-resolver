@@ -2,8 +2,10 @@
 
 package com.ulpgc.rubikresolver
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -38,11 +40,16 @@ import androidx.compose.ui.unit.sp
 import com.ulpgc.rubikresolver.components.IconButton
 import com.ulpgc.rubikresolver.components.MainButton
 import com.ulpgc.rubikresolver.ui.theme.RubikResolverTheme
+import org.opencv.android.OpenCVLoader
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        ContextProvider.init(this)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        if (OpenCVLoader.initDebug()) Log.d("OpenCV", "OpenCV loaded")
+        else Log.d("OpenCV", "[ERROR] OpenCV not loaded")
+
         setContent {
             RubikResolverTheme {
                 MainFrame()
@@ -133,4 +140,12 @@ fun ButtonMenu() {
         }
     }
 
+}
+
+object ContextProvider {
+    lateinit var appContext: Context
+
+    fun init(context: Context) {
+        appContext = context.applicationContext
+    }
 }

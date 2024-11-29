@@ -1,25 +1,22 @@
 package com.ulpgc.rubikresolver
 
 import android.Manifest
-import androidx.compose.ui.graphics.Color
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
-import android.util.Size
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.camera.core.ImageCapture.OnImageCapturedCallback
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
-import androidx.camera.core.resolutionselector.ResolutionSelector
-import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,6 +32,8 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -50,6 +49,7 @@ class CameraActivity : ComponentActivity() {
         if(!hasRequiredPermissions()){
             ActivityCompat.requestPermissions(this, CAMERA_PERMISSIONS, 0)
         }
+
         setContent {
             RubikResolverTheme {
                 val scaffoldState = rememberBottomSheetScaffoldState()
@@ -57,17 +57,6 @@ class CameraActivity : ComponentActivity() {
                     LifecycleCameraController(applicationContext).apply{
                         setEnabledUseCases(
                             CameraController.IMAGE_CAPTURE
-                        )
-
-                        setImageCaptureResolutionSelector(
-                            ResolutionSelector.Builder()
-                                .setResolutionStrategy(
-                                    ResolutionStrategy(
-                                        Size(640, 480),
-                                        ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER
-                                    )
-                                )
-                                .build()
                         )
                     }
                 }
@@ -80,9 +69,10 @@ class CameraActivity : ComponentActivity() {
                 ){
                     padding ->
                     Box(modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
+                        .fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ){
+
                         CameraPreview(controller = controller,
                             modifier = Modifier
                                 .fillMaxSize()
@@ -165,13 +155,9 @@ class CameraActivity : ComponentActivity() {
         val byteCount = bitmap.byteCount
         val density = bitmap.density
 
-        // Display the properties (e.g., in a Log message)
         Log.d("BitmapProperties", "Width: $width, Height: $height")
         Log.d("BitmapProperties", "Config: $config, ByteCount: $byteCount")
         Log.d("BitmapProperties", "Density: $density")
-
-        // Or display them in a TextView or other UI element
-        // ...
     }
 
 }
