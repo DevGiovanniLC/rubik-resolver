@@ -7,3 +7,4 @@ gradle
 .externalNativeBuild
 .cxx
 local.properties
+opencv
