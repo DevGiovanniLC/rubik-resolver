@@ -3,11 +3,7 @@ package com.ulpgc.rubikresolver
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.ImageFormat
 import android.graphics.Matrix
-import android.graphics.Rect
-import android.graphics.YuvImage
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -33,7 +29,6 @@ import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -50,8 +45,16 @@ import androidx.core.content.ContextCompat
 import com.ulpgc.rubikresolver.components.CameraPreview
 import com.ulpgc.rubikresolver.ui.theme.RubikResolverTheme
 import org.opencv.android.Utils
+import org.opencv.core.Core
+import org.opencv.core.CvType
 import org.opencv.core.Mat
-import java.io.ByteArrayOutputStream
+import org.opencv.core.MatOfPoint
+import org.opencv.core.Point
+import org.opencv.core.Scalar
+import org.opencv.core.Size
+import org.opencv.imgproc.Imgproc
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 @ExperimentalMaterial3Api
 class CameraActivity : ComponentActivity() {
@@ -59,7 +62,7 @@ class CameraActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        if(!hasRequiredPermissions()){
+        if (!hasRequiredPermissions()) {
             ActivityCompat.requestPermissions(this, CAMERA_PERMISSIONS, 0)
         }
 
@@ -86,7 +89,7 @@ class CameraActivity : ComponentActivity() {
                 scaffoldState = scaffoldState,
                 sheetPeekHeight = 0.dp,
                 sheetContent = {}
-            ) { padding ->
+            ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize(),
@@ -144,7 +147,7 @@ class CameraActivity : ComponentActivity() {
         return CAMERA_PERMISSIONS.all {
             ContextCompat.checkSelfPermission(
                 applicationContext,
-                it.toString()
+                it
             ) == PackageManager.PERMISSION_GRANTED
         }
     }
@@ -158,28 +161,29 @@ class CameraActivity : ComponentActivity() {
         controller: LifecycleCameraController,
         onPhotoTaken: (Bitmap) -> Unit
     ) {
-      controller.takePicture(
-          ContextCompat.getMainExecutor(applicationContext),
-          object : OnImageCapturedCallback(){
-              override fun onCaptureSuccess(image: ImageProxy) {
-                  super.onCaptureSuccess(image)
+        controller.takePicture(
+            ContextCompat.getMainExecutor(applicationContext),
+            object : OnImageCapturedCallback() {
+                override fun onCaptureSuccess(image: ImageProxy) {
+                    super.onCaptureSuccess(image)
 
-                  val rotationDegrees = image.imageInfo.rotationDegrees
-                  val bitmap = image.toBitmap()
-                  val matrix = Matrix()
-                  matrix.postRotate(rotationDegrees.toFloat())
-                  val correctedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+                    val rotationDegrees = image.imageInfo.rotationDegrees
+                    val bitmap = image.toBitmap()
+                    val matrix = Matrix()
+                    matrix.postRotate(rotationDegrees.toFloat())
+                    val correctedBitmap =
+                        Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 
-                  onPhotoTaken(correctedBitmap)
-              }
+                    onPhotoTaken(processRubikCubeFace(correctedBitmap))
+                }
 
-              override fun onError(exception: ImageCaptureException) {
-                  super.onError(exception)
-                  Log.e("Camera", "Error taking photo", exception)
-              }
+                override fun onError(exception: ImageCaptureException) {
+                    super.onError(exception)
+                    Log.e("Camera", "Error taking photo", exception)
+                }
 
-          }
-      )
+            }
+        )
     }
 
     private fun onTakePhoto(bitmap: Bitmap) {
@@ -193,50 +197,135 @@ class CameraActivity : ComponentActivity() {
         Log.d("BitmapProperties", "Config: $config, ByteCount: $byteCount")
         Log.d("BitmapProperties", "Density: $density")
 
-        // Process image with OpenCV
-        processImage(bitmap)
     }
 
-    private fun processImage(bitmap: Bitmap) {
-        // Process image with OpenCV
+    private fun processRubikCubeFace(bitmap: Bitmap): Bitmap {
+        val colorRanges = mapOf(
+            'R' to Pair(Scalar(0.0, 120.0, 70.0), Scalar(5.0, 255.0, 255.0)),  // Red
+            'G' to Pair(Scalar(35.0, 100.0, 70.0), Scalar(65.0, 255.0, 255.0)), // Green
+            'B' to Pair(Scalar(90.0, 150.0, 0.0), Scalar(130.0, 255.0, 255.0)), // Blue
+            'Y' to Pair(Scalar(25.0, 100.0, 100.0), Scalar(35.0, 255.0, 255.0)), // Yellow
+            'O' to Pair(Scalar(7.0, 100.0, 20.0), Scalar(14.0, 255.0, 255.0)),  // Orange
+            'W' to Pair(Scalar(0.0, 0.0, 180.0), Scalar(180.0, 40.0, 255.0))     // White
+        )
+
         val mat = Mat()
         Utils.bitmapToMat(bitmap, mat)
+        val hsvImage = Mat()
+        Imgproc.cvtColor(mat, hsvImage, Imgproc.COLOR_RGB2HSV)
 
-        // Detect tiles
-        detectTiles(mat)
+        val colorContours = mutableListOf<MatOfPoint>()
 
-        Utils.matToBitmap(mat, bitmap)
+        for ((_, hsv) in colorRanges) {
+            colorContours.addAll(findContours(hsvImage, hsv))
+        }
 
-        // Display processed image
+        println("Contours found: ${colorContours.size}")
+
+        val sortedContours = mutableListOf<MatOfPoint>()
+        for (contour in colorContours) {
+            val area = Imgproc.contourArea(contour)
+            if (area < 50000 || area > 600000) continue
+
+            print("made it here")
+            val boundingRect = Imgproc.boundingRect(contour)
+            val aspectRatio = boundingRect.width.toDouble() / boundingRect.height
+            if (aspectRatio > 1.2 || aspectRatio < 0.8) continue
+
+            addToSortedContours(sortedContours, contour)
+        }
+
+        println("Sorted contours: ${sortedContours.size}")
+        println("Contours: $sortedContours")
+
+        var i = 0
+        for (contour in sortedContours) {
+            i++
+            val rect = Imgproc.boundingRect(contour)
+            val averageColor = getAverageColor(hsvImage, contour)
+            val nearestColor = getNearestColor(averageColor, colorRanges)
+
+            Imgproc.rectangle(
+                mat,
+                Point(rect.x.toDouble(), rect.y.toDouble()),
+                Point((rect.x + rect.width).toDouble(), (rect.y + rect.height).toDouble()),
+                Scalar(36.0, 255.0, 12.0),
+                5
+            )
+            Imgproc.putText(
+                mat,
+                "#$i $nearestColor",
+                Point(rect.x.toDouble(), (rect.y - 5).toDouble()),
+                Imgproc.FONT_HERSHEY_SIMPLEX,
+                2.7,
+                Scalar(255.0, 255.0, 255.0), 2
+            )
+        }
+        val resultBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(mat, resultBitmap)
+
+        return resultBitmap
+    }
+
+    private fun findContours(hsvImage: Mat, hsvColor: Pair<Scalar, Scalar>): List<MatOfPoint> {
+        val mask = Mat()
+        Core.inRange(hsvImage, hsvColor.first, hsvColor.second, mask)
+
+        val kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, Size(5.0, 5.0))
+        Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_CLOSE, kernel)
+        Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_OPEN, kernel)
+
+        val contours = mutableListOf<MatOfPoint>()
+        Imgproc.findContours(
+            mask,
+            contours,
+            Mat(),
+            Imgproc.RETR_EXTERNAL,
+            Imgproc.CHAIN_APPROX_SIMPLE
+        )
+        return contours
 
     }
 
-    private fun detectTiles(mat: Mat) {
-        // Detect tiles
-
+    private fun addToSortedContours(sortedContours: MutableList<MatOfPoint>, contour: MatOfPoint) {
+        val rect = Imgproc.boundingRect(contour)
+        val insertIndex = sortedContours.indexOfFirst { Imgproc.boundingRect(it).y > rect.y }
+        if (insertIndex >= 0) {
+            sortedContours.add(insertIndex, contour)
+        } else {
+            sortedContours.add(contour)
+        }
     }
 
-    fun ImageProxy.toBitmap(): Bitmap {
-        val yBuffer = planes[0].buffer
-        val uBuffer = planes[1].buffer
-        val vBuffer = planes[2].buffer
+    private fun getAverageColor(image: Mat, contour: MatOfPoint): Scalar {
+        val mask = Mat.zeros(image.size(), CvType.CV_8UC1)
+        Imgproc.drawContours(mask, listOf(contour), -1, Scalar(255.0), Core.FILLED)
 
-        val ySize = yBuffer.remaining()
-        val uSize = uBuffer.remaining()
-        val vSize = vBuffer.remaining()
+        val mean = Core.mean(image, mask)
+        return mean
+    }
 
-        val nv21 = ByteArray(ySize + uSize + vSize)
+    private fun getNearestColor(color: Scalar, colors: Map<Char, Pair<Scalar, Scalar>>): Char {
+        var nearestColor = ' '
+        var minDistance = Double.MAX_VALUE
+        if (color.`val`[0] > 170) {
+            color.`val`[0] = 180 - color.`val`[0]
+        }
+        for ((key, value) in colors) {
+            val referenceColor = value.second
 
-        // Copy Y, U, and V buffers into NV21 array
-        yBuffer.get(nv21, 0, ySize)
-        vBuffer.get(nv21, ySize, vSize)
-        uBuffer.get(nv21, ySize + vSize, uSize)
+            val distance = sqrt(
+                (color.`val`[0] - referenceColor.`val`[0]).pow(2.0) +
+                        (color.`val`[1] - referenceColor.`val`[1]).pow(2.0) +
+                        (color.`val`[2] - referenceColor.`val`[2]).pow(2.0)
+            )
 
-        // Convert NV21 format to Bitmap
-        val yuvImage = YuvImage(nv21, ImageFormat.NV21, width, height, null)
-        val out = ByteArrayOutputStream()
-        yuvImage.compressToJpeg(Rect(0, 0, width, height), 100, out)
-        val imageBytes = out.toByteArray()
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+            if (distance < minDistance) {
+                minDistance = distance
+                nearestColor = key
+            }
+        }
+        println("Color: $color, Nearest: $nearestColor")
+        return nearestColor
     }
 }
