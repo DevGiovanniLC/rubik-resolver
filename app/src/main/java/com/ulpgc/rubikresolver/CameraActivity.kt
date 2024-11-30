@@ -3,11 +3,7 @@ package com.ulpgc.rubikresolver
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.ImageFormat
 import android.graphics.Matrix
-import android.graphics.Rect
-import android.graphics.YuvImage
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -33,7 +29,6 @@ import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -50,8 +45,10 @@ import androidx.core.content.ContextCompat
 import com.ulpgc.rubikresolver.components.CameraPreview
 import com.ulpgc.rubikresolver.ui.theme.RubikResolverTheme
 import org.opencv.android.Utils
+import org.opencv.core.Core
 import org.opencv.core.Mat
-import java.io.ByteArrayOutputStream
+import org.opencv.core.Scalar
+import org.opencv.imgproc.Imgproc
 
 @ExperimentalMaterial3Api
 class CameraActivity : ComponentActivity() {
@@ -86,7 +83,7 @@ class CameraActivity : ComponentActivity() {
                 scaffoldState = scaffoldState,
                 sheetPeekHeight = 0.dp,
                 sheetContent = {}
-            ) { padding ->
+            ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize(),
@@ -144,7 +141,7 @@ class CameraActivity : ComponentActivity() {
         return CAMERA_PERMISSIONS.all {
             ContextCompat.checkSelfPermission(
                 applicationContext,
-                it.toString()
+                it
             ) == PackageManager.PERMISSION_GRANTED
         }
     }
@@ -170,7 +167,7 @@ class CameraActivity : ComponentActivity() {
                   matrix.postRotate(rotationDegrees.toFloat())
                   val correctedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 
-                  onPhotoTaken(correctedBitmap)
+                  onPhotoTaken(mockProcessRedTiles(correctedBitmap))
               }
 
               override fun onError(exception: ImageCaptureException) {
@@ -194,49 +191,30 @@ class CameraActivity : ComponentActivity() {
         Log.d("BitmapProperties", "Density: $density")
 
         // Process image with OpenCV
-        processImage(bitmap)
+        mockProcessRedTiles(bitmap)
     }
 
-    private fun processImage(bitmap: Bitmap) {
+    private fun mockProcessRedTiles(bitmap: Bitmap): Bitmap {
         // Process image with OpenCV
         val mat = Mat()
         Utils.bitmapToMat(bitmap, mat)
+        val hsvImage = Mat()
+        Imgproc.cvtColor(mat, hsvImage, Imgproc.COLOR_RGB2HSV)
 
-        // Detect tiles
-        detectTiles(mat)
+        val lowerRed = Scalar(0.0, 120.0, 70.0)
+        val upperRed = Scalar(10.0, 255.0, 255.0)
 
-        Utils.matToBitmap(mat, bitmap)
+        val mask = Mat()
+        Core.inRange(hsvImage, lowerRed, upperRed, mask)
 
-        // Display processed image
 
+        val result = Mat()
+        Core.bitwise_and(mat, mat, result, mask)
+
+        val resultBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+        Utils.matToBitmap(result, resultBitmap)
+
+        return resultBitmap
     }
 
-    private fun detectTiles(mat: Mat) {
-        // Detect tiles
-
-    }
-
-    fun ImageProxy.toBitmap(): Bitmap {
-        val yBuffer = planes[0].buffer
-        val uBuffer = planes[1].buffer
-        val vBuffer = planes[2].buffer
-
-        val ySize = yBuffer.remaining()
-        val uSize = uBuffer.remaining()
-        val vSize = vBuffer.remaining()
-
-        val nv21 = ByteArray(ySize + uSize + vSize)
-
-        // Copy Y, U, and V buffers into NV21 array
-        yBuffer.get(nv21, 0, ySize)
-        vBuffer.get(nv21, ySize, vSize)
-        uBuffer.get(nv21, ySize + vSize, uSize)
-
-        // Convert NV21 format to Bitmap
-        val yuvImage = YuvImage(nv21, ImageFormat.NV21, width, height, null)
-        val out = ByteArrayOutputStream()
-        yuvImage.compressToJpeg(Rect(0, 0, width, height), 100, out)
-        val imageBytes = out.toByteArray()
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-    }
 }
