@@ -1,7 +1,9 @@
 package com.ulpgc.rubikresolver.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,14 +15,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +37,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ulpgc.rubikresolver.R
+import com.ulpgc.rubikresolver.model.RubikCube
+import com.ulpgc.rubikresolver.services.arrayOfCharToColors
 
 @Preview
 @Composable
@@ -50,8 +55,6 @@ fun MockComponentsPreview(){
             )
 
             IconButton(R.drawable.gear, 90.dp, onClick = {})
-
-            RadioGroupExample()
         }
     }
 
@@ -85,7 +88,7 @@ fun MainButton(
 
 @Composable
 fun IconButton(image:Int = R.drawable.gear, imageSize: Dp = 70.dp,onClick: () -> Unit) {
-    val buttonShape = CircleShape // Forma circular
+    val buttonShape = CircleShape
 
     Box(
         modifier = Modifier
@@ -104,8 +107,51 @@ fun IconButton(image:Int = R.drawable.gear, imageSize: Dp = 70.dp,onClick: () ->
                 painter = painterResource(id = image),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(imageSize) // Ajusta el tamaño de la imagen
+                    .size(imageSize)
             )
+        }
+    }
+}
+
+@Composable
+fun ColorPalette(
+    onColorSelected: (Color) -> Unit
+) {
+    var selectedOption by remember { mutableStateOf(Color.Red) }
+
+    val colors = listOf(
+        listOf(
+            Color.Red, Color.Green, Color.Blue,
+        ),
+        listOf(
+            Color.Yellow, Color(0xFFFF9800), Color.White
+        )
+    )
+
+    Box(
+        modifier = Modifier
+            .wrapContentSize()
+            .background(Color.Gray, shape = RoundedCornerShape(12.dp))
+            .padding(16.dp)
+    ) {
+        Column() {
+            colors.forEach { row ->
+                Row(modifier = Modifier.padding(10.dp)) {
+                    row.forEach { color ->
+                        val optionId = color
+                        TileButton(
+                            isSelected = selectedOption == optionId,
+                            color = color,
+                            onClick = {
+                                selectedOption = color
+                                onColorSelected(color)
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.width(10.dp))
+                    }
+                }
+            }
         }
     }
 }
@@ -113,38 +159,45 @@ fun IconButton(image:Int = R.drawable.gear, imageSize: Dp = 70.dp,onClick: () ->
 
 
 @Composable
-fun RadioGroupExample() {
-    // Lista de opciones
-    val options = listOf("Opción 1", "Opción 2", "Opción 3")
-
-    // Estado para la opción seleccionada
-    var selectedOption by remember { mutableStateOf<String?>(null) }
+fun FaceButtonGroup(
+    colorArray: Array<Array<MutableState<Color>>>,
+    selectedColor: Color
+) {
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("Selecciona una opción:")
+        colorArray.forEachIndexed { rowIndex, row ->
+            Row {
+                row.forEachIndexed { columnIndex, cell ->
+                    val optionId = "$rowIndex/$columnIndex"
 
-        // Itera sobre las opciones para crear un "RadioGroup"
-        options.forEach { option ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                RadioButton(
-                    selected = selectedOption == option,
-                    onClick = { selectedOption = option }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(option)
+                    TileButton(
+                        isSelected = true,
+                        color = cell.value,
+                        onClick = {
+                            cell.value = selectedColor
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.width(1.dp))
+                }
             }
+            Spacer(modifier = Modifier.height(1.dp))
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Muestra la opción seleccionada
-        Text(
-            text = "Seleccionaste: ${selectedOption ?: "Ninguna"}",
-        )
     }
 }
+
+@Composable
+fun TileButton(
+    isSelected: Boolean,
+    color: Color,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(65.dp)
+            .border(2.dp, if (isSelected) Color.Black else Color.Gray)
+            .background(color)
+            .clickable(onClick = onClick)
+    )
+}
+
