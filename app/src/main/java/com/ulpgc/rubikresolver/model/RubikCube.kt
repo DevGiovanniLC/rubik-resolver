@@ -106,3 +106,4 @@ data class RubikCube private constructor (private val cube: Array<Array<Array<Ch
         BACK(5),   // B -> orange
     }
 }
+
