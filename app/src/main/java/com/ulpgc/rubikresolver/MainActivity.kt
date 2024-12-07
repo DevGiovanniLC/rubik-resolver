@@ -124,7 +124,7 @@ fun ButtonMenu() {
 
         MainButton(
             text = "Tutorial",
-            onClick = { launcher.launch(Intent(context, CameraActivity::class.java)) }
+            onClick = { launcher.launch(Intent(context, CheckSideActivity::class.java)) }
         )
 
 
