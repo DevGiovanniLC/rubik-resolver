@@ -118,13 +118,18 @@ fun ButtonMenu() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         MainButton(
-            text = "Start",
+            text = "Camera",
             onClick = { launcher.launch(Intent(context, CameraActivity::class.java)) }
         )
 
         MainButton(
-            text = "Tutorial",
+            text = "CheckSide",
             onClick = { launcher.launch(Intent(context, CheckSideActivity::class.java)) }
+        )
+
+        MainButton(
+            text = "CheckCube",
+            onClick = { launcher.launch(Intent(context, CheckCubeActivity::class.java)) }
         )
 
 
