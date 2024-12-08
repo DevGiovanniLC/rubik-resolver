@@ -1,46 +1,87 @@
 package com.ulpgc.rubikresolver
 
+
 import com.ulpgc.rubikresolver.model.RubikCube
-import org.junit.Assert.assertEquals
+import com.ulpgc.rubikresolver.model.RubikCubeError
+import com.ulpgc.rubikresolver.model.RubikFaceError
 import org.junit.Test
+import org.junit.Assert.*
+import org.junit.Before
+
 
 class RubikCubeTest {
-    @Test
-    fun toStringTest() {
-        val cube = RubikCube(
-            arrayOf(
-                arrayOf(
-                    arrayOf('R', 'R', 'R'),
-                    arrayOf('R', 'R', 'R'),
-                    arrayOf('R', 'R', 'R')
-                ),
-                arrayOf(
-                    arrayOf('O', 'O', 'O'),
-                    arrayOf('O', 'O', 'O'),
-                    arrayOf('O', 'O', 'O')
-                ),
-                arrayOf(
-                    arrayOf('B', 'B', 'B'),
-                    arrayOf('B', 'B', 'B'),
-                    arrayOf('B', 'B', 'B')
-                ),
-                arrayOf(
-                    arrayOf('G', 'G', 'G'),
-                    arrayOf('G', 'G', 'G'),
-                    arrayOf('G', 'G', 'G')
-                ),
-                arrayOf(
-                    arrayOf('Y', 'Y', 'Y'),
-                    arrayOf('Y', 'Y', 'Y'),
-                    arrayOf('Y', 'Y', 'Y')
-                ),
-                arrayOf(
-                    arrayOf('W', 'W', 'W'),
-                    arrayOf('W', 'W', 'W'),
-                    arrayOf('W', 'W', 'W')
-                )
-            )
-        )
-        assertEquals("RRRRRRRRROOOOOOOOOBBBBBBBBBGGGGGGGGGYYYYYYYYYWWWWWWWWW", cube.toString())
+
+    @Before
+    fun setUp() {
+        RubikCube.RubikBuilder.reset()
     }
+
+    @Test(expected = RubikCubeError::class)
+    fun toStringEmptyCubeErrorTest() {
+        val cube = RubikCube.RubikBuilder.build()
+    }
+
+    @Test(expected = RubikFaceError::class)
+    fun toStringEmptyFacesErrorTest() {
+        val cube = RubikCube.RubikBuilder
+            .setFace(RubikCube.Face.UP, arrayOf(
+                arrayOf(' ', ' ', ' '),
+                arrayOf(' ', ' ', ' '),
+                arrayOf(' ', ' ', ' ')))
+    }
+
+    @Test(expected = RubikFaceError::class)
+    fun toStringEmptyPartOfFaceErrorTest() {
+        val cube = RubikCube.RubikBuilder
+            .setFace(RubikCube.Face.UP, arrayOf(
+                arrayOf('U', 'U', 'U'),
+                arrayOf(' ', ' ', ' '),
+                arrayOf(' ', ' ', ' ')))
+    }
+
+    @Test(expected = RubikCubeError::class)
+    fun toStringOnlyOneFaceErrorTest() {
+        val cube = RubikCube.RubikBuilder
+            .setFace(RubikCube.Face.UP, arrayOf(
+                arrayOf('U', 'U', 'U'),
+                arrayOf('U', 'U', 'U'),
+                arrayOf('U', 'U', 'U')))
+            .build()
+    }
+
+
+
+    @Test
+    fun toStringCorrectTest() {
+        val cube = RubikCube.RubikBuilder
+            .setFace(RubikCube.Face.UP, arrayOf(
+                arrayOf('U', 'U', 'U'),
+                arrayOf('U', 'U', 'U'),
+                arrayOf('U', 'U', 'U')))
+            .setFace(RubikCube.Face.RIGHT, arrayOf(
+                arrayOf('R', 'R', 'R'),
+                arrayOf('R', 'R', 'R'),
+                arrayOf('R', 'R', 'R')))
+            .setFace(RubikCube.Face.DOWN, arrayOf(
+                arrayOf('D', 'D', 'D'),
+                arrayOf('D', 'D', 'D'),
+                arrayOf('D', 'D', 'D')))
+            .setFace(RubikCube.Face.LEFT, arrayOf(
+                arrayOf('L', 'L', 'L'),
+                arrayOf('L', 'L', 'L'),
+                arrayOf('L', 'L', 'L')))
+            .setFace(RubikCube.Face.BACK, arrayOf(
+                arrayOf('B', 'B', 'B'),
+                arrayOf('B', 'B', 'B'),
+                arrayOf('B', 'B', 'B')))
+            .setFace(RubikCube.Face.FRONT, arrayOf(
+                arrayOf('F', 'F', 'F'),
+                arrayOf('F', 'F', 'F'),
+                arrayOf('F', 'F', 'F')))
+            .build()
+        val expected = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB"
+        assertEquals(expected,cube.toString())
+
+    }
+
 }
