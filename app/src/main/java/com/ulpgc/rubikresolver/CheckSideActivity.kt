@@ -48,7 +48,7 @@ fun MainContent() {
                 .fillMaxSize()
                 .padding(top = 200.dp)
         ) {
-            FaceButtonGroup(colorArray = faceColor, selectedColor = selectedColor)
+            FaceButtonGroup(colorArray = faceColor, tileModifier = Modifier.size(70.dp) ,selectedColor = selectedColor)
             ColorPalette(onColorSelected = { color ->
                 selectedColor = color
             })

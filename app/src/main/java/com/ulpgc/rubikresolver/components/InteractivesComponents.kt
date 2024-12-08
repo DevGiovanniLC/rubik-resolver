@@ -142,6 +142,7 @@ fun ColorPalette(
                         TileButton(
                             isSelected = selectedOption == optionId,
                             color = color,
+                            modifier = Modifier.size(50.dp),
                             onClick = {
                                 selectedOption = color
                                 onColorSelected(color)
@@ -161,7 +162,8 @@ fun ColorPalette(
 @Composable
 fun FaceButtonGroup(
     colorArray: Array<Array<MutableState<Color>>>,
-    selectedColor: Color
+    selectedColor: Color,
+    tileModifier: Modifier = Modifier,
 ) {
 
     Column(modifier = Modifier.padding(16.dp)) {
@@ -173,8 +175,40 @@ fun FaceButtonGroup(
                     TileButton(
                         isSelected = true,
                         color = cell.value,
+                        modifier = tileModifier,
                         onClick = {
                             cell.value = selectedColor
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.width(1.dp))
+                }
+            }
+            Spacer(modifier = Modifier.height(1.dp))
+        }
+    }
+}
+
+
+@Composable
+fun FaceGroup(
+    colorArray: Array<Array<MutableState<Color>>>,
+    onTileClicked: () -> Unit = {},
+    tileModifier: Modifier = Modifier,
+) {
+
+    Column(modifier = Modifier.padding(2.dp)) {
+        colorArray.forEachIndexed { rowIndex, row ->
+            Row {
+                row.forEachIndexed { columnIndex, cell ->
+                    val optionId = "$rowIndex/$columnIndex"
+
+                    TileButton(
+                        isSelected = true,
+                        color = cell.value,
+                        modifier = tileModifier,
+                        onClick = {
+                            onTileClicked()
                         }
                     )
 
@@ -190,11 +224,11 @@ fun FaceButtonGroup(
 fun TileButton(
     isSelected: Boolean,
     color: Color,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Box(
-        modifier = Modifier
-            .size(65.dp)
+        modifier = modifier
             .border(2.dp, if (isSelected) Color.Black else Color.Gray)
             .background(color)
             .clickable(onClick = onClick)
