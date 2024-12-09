@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ulpgc.rubikresolver.components.ColorPalette
@@ -40,15 +41,18 @@ fun MainContent() {
         }
     }
 
+    //val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+
     Surface(color = Color(0xFF29A2FF)) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(50.dp),
             modifier = Modifier.padding(16.dp)
                 .fillMaxSize()
-                .padding(top = 200.dp)
+                .padding(top = screenHeight * 0.1f)
         ) {
-            FaceButtonGroup(colorArray = faceColor, tileModifier = Modifier.size(70.dp) ,selectedColor = selectedColor)
+            FaceButtonGroup(colorArray = faceColor, tileModifier = Modifier.size(screenHeight * 0.08f) ,selectedColor = selectedColor)
             ColorPalette(onColorSelected = { color ->
                 selectedColor = color
             })
