@@ -26,45 +26,46 @@ class CheckSideActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MainContent()
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainContent() {
-    var selectedColor by remember { mutableStateOf(Color.Red) }
-    val faceColor = remember {
-        Array(3) {
-            Array(3) { mutableStateOf(Color.Gray) }
+            MainComponent()
         }
     }
 
-    //val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    @Preview(showBackground = true)
+    @Composable
+    fun MainComponent() {
+        var selectedColor by remember { mutableStateOf(Color.Red) }
+        val faceColor = remember {
+            Array(3) {
+                Array(3) { mutableStateOf(Color.Gray) }
+            }
+        }
 
-    Surface(color = Color(0xFF29A2FF)) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(50.dp),
-            modifier = Modifier.padding(16.dp)
-                .fillMaxSize()
-                .padding(top = screenHeight * 0.1f)
-        ) {
-            FaceButtonGroup(colorArray = faceColor, tileModifier = Modifier.size(screenHeight * 0.08f) ,selectedColor = selectedColor)
-            ColorPalette(onColorSelected = { color ->
-                selectedColor = color
-            })
+        //val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+        Surface(color = Color(0xFF29A2FF)) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(50.dp),
+                modifier = Modifier.padding(16.dp)
+                    .fillMaxSize()
+                    .padding(top = screenHeight * 0.1f)
             ) {
-                IconButton(R.drawable.x, 90.dp, onClick = {})
-                IconButton(R.drawable.check, 90.dp, onClick = {})
-                IconButton(R.drawable.left_arrow, 90.dp, onClick = {})
+                FaceButtonGroup(colorArray = faceColor, tileModifier = Modifier.size(screenHeight * 0.08f) ,selectedColor = selectedColor)
+                ColorPalette(onColorSelected = { color ->
+                    selectedColor = color
+                })
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    IconButton(R.drawable.x, 90.dp, onClick = {})
+                    IconButton(R.drawable.check, 90.dp, onClick = {})
+                    IconButton(R.drawable.left_arrow, 90.dp, onClick = {})
+                }
             }
         }
     }
 }
+

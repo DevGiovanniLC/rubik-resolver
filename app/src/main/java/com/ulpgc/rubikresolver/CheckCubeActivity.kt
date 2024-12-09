@@ -33,76 +33,76 @@ class CheckCubeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MainFragment()
+            MainComponent()
         }
     }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun MainFragment() {
-    Surface(color = Color(0xFF29A2FF)) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            RubikCross()
-            Spacer(modifier = Modifier.height(100.dp))
-            MainButton(
-                text = "Solve it!",
-                onClick = { }
-            )
-        }
-    }
-}
-
-
-
-@Composable
-fun RubikCross() {
-    val faceColor = remember { Array(3) { Array(3) { mutableStateOf(Color.Gray) } } }
-
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    //val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-
-    val faceSize = screenWidth / 4
-    val tileSize = faceSize / 4
-    val space = faceSize*0.82f
-
-    Box(
-        modifier = Modifier
-            .background(Color(0xFF29A2FF)),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            modifier = Modifier.wrapContentSize()
-        ) {
-
-            Row {
-                Spacer(modifier = Modifier.width(space))
-                FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize))
-            }
-
-            // Fila central
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+    @Preview(showBackground = true)
+    @Composable
+    fun MainComponent() {
+        Surface(color = Color(0xFF29A2FF)) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
             ) {
-                FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize)) // Izquierda
-                FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize)) // Centro
-                FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize)) // Derecha
-                FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize)) // Naranja
-            }
-
-            Row {
-                Spacer(modifier = Modifier.width(space))
-                FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize))
+                RubikCross()
+                Spacer(modifier = Modifier.height(100.dp))
+                MainButton(
+                    text = "Solve it!",
+                    onClick = { }
+                )
             }
         }
+    }
 
 
+
+    @Composable
+    fun RubikCross() {
+        val faceColor = remember { Array(3) { Array(3) { mutableStateOf(Color.Gray) } } }
+
+        val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+        //val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+
+        val faceSize = screenWidth / 4
+        val tileSize = faceSize / 4
+        val space = faceSize*0.82f
+
+        Box(
+            modifier = Modifier
+                .background(Color(0xFF29A2FF)),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                modifier = Modifier.wrapContentSize()
+            ) {
+
+                Row {
+                    Spacer(modifier = Modifier.width(space))
+                    FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize))
+                }
+
+                // Fila central
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize)) // Izquierda
+                    FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize)) // Centro
+                    FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize)) // Derecha
+                    FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize)) // Naranja
+                }
+
+                Row {
+                    Spacer(modifier = Modifier.width(space))
+                    FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize))
+                }
+            }
+
+        }
     }
 }
+
 
 

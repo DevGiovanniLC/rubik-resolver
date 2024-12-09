@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -52,105 +53,112 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             RubikResolverTheme {
-                MainFrame()
+                MainComponent()
+            }
+        }
+
+    }
+    @Preview(showBackground = true)
+    @Composable
+    fun MainComponent(){
+        //val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+
+        Surface(color = Color(0xFF29A2FF)) {
+            Column(Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(screenHeight * 0.05f),
+            ) {
+                Spacer(modifier = Modifier.height(screenHeight * 0.05f))
+
+                Title()
+
+                Image(
+                    painter = painterResource(id = R.drawable.cube_model),
+                    contentDescription = null,
+                    modifier = Modifier.size(screenHeight* 0.15f)
+                )
+
+                ButtonMenu()
             }
         }
     }
-}
 
 
-@Preview(showBackground = true)
-@Composable
-fun MainFrame(){
-    Surface(color = Color(0xFF29A2FF)) {
-        Column(Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(40.dp),
+
+    @Composable
+    fun Title(){
+        Text(
+            text = "Solve it!",
+            style = TextStyle(
+                fontSize = 50.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                shadow = Shadow(
+                    color = Color.Black,
+                    offset = Offset(3f, 3f),
+                    blurRadius = 4f
+                ),
+                background = Color.Transparent
+            )
+        )
+    }
+
+    @Composable
+    fun ButtonMenu() {
+
+        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+
+        val launcher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult()
+        ) { }
+
+        val context = LocalContext.current
+
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(25.dp),
+            modifier = Modifier
+                .padding(bottom = 40.dp )
+                .padding(start = 10.dp )
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
-
-            Title()
-
-            Image(
-                painter = painterResource(id = R.drawable.cube_model),
-                contentDescription = null,
-                modifier = Modifier.size(150.dp)
+            MainButton(
+                text = "Camera",
+                onClick = { launcher.launch(Intent(context, CameraActivity::class.java)) }
             )
 
-            ButtonMenu()
+            MainButton(
+                text = "Check Side",
+                onClick = { launcher.launch(Intent(context, CheckSideActivity::class.java)) }
+            )
+
+            MainButton(
+                text = "Check Cube",
+                onClick = { launcher.launch(Intent(context, CheckCubeActivity::class.java)) }
+            )
+
+
+            Spacer(modifier = Modifier.weight(1f))
+
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(R.drawable.gear, imageSize = screenHeight * 0.12f, onClick = {})
+            }
         }
-    }
-}
 
-@Composable
-fun Title(){
-    Text(
-        text = "Solve it!",
-        style = TextStyle(
-            fontSize = 50.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            shadow = Shadow(
-                color = Color.Black,
-                offset = Offset(3f, 3f),
-                blurRadius = 4f
-            ),
-            background = Color.Transparent
-        )
-    )
-}
-
-@Composable
-fun ButtonMenu() {
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { }
-
-    val context = LocalContext.current
-
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(25.dp),
-        modifier = Modifier
-            .padding(bottom = 40.dp )
-            .padding(start = 10.dp )
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        MainButton(
-            text = "Camera",
-            onClick = { launcher.launch(Intent(context, CameraActivity::class.java)) }
-        )
-
-        MainButton(
-            text = "CheckSide",
-            onClick = { launcher.launch(Intent(context, CheckSideActivity::class.java)) }
-        )
-
-        MainButton(
-            text = "CheckCube",
-            onClick = { launcher.launch(Intent(context, CheckCubeActivity::class.java)) }
-        )
-
-
-        Spacer(modifier = Modifier.weight(1f))
-
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(R.drawable.gear, imageSize = 80.dp, onClick = {})
-        }
     }
 
-}
+    object ContextProvider {
+        lateinit var appContext: Context
 
-object ContextProvider {
-    lateinit var appContext: Context
-
-    fun init(context: Context) {
-        appContext = context.applicationContext
+        fun init(context: Context) {
+            appContext = context.applicationContext
+        }
     }
 }

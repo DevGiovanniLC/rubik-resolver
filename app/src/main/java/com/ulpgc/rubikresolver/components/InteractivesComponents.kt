@@ -65,6 +65,7 @@ fun MockComponentsPreview(){
 fun MainButton(
     text: String,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val buttonShape = RoundedCornerShape(10.dp)
 
@@ -72,22 +73,21 @@ fun MainButton(
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .size(width = 120.dp, height = 50.dp)
             .border(width = 2.dp, color = Color.Black, shape = buttonShape)
     ) {
         Button(
             onClick = onClick,
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             shape = buttonShape,
-            modifier = Modifier.size(width = 120.dp, height = 50.dp)
+            modifier = modifier.height(50.dp)
         ) {
-            Text(text = text, color = Color.Black, fontSize = 14.sp)
+            Text(text = text, color = Color.Black)
         }
     }
 }
 
 @Composable
-fun IconButton(image:Int = R.drawable.gear, imageSize: Dp = 70.dp,onClick: () -> Unit) {
+fun IconButton(image:Int = R.drawable.gear,  imageSize: Dp = 70.dp,onClick: () -> Unit, modifier: Modifier = Modifier) {
     val buttonShape = CircleShape
 
     Box(
@@ -99,15 +99,15 @@ fun IconButton(image:Int = R.drawable.gear, imageSize: Dp = 70.dp,onClick: () ->
             onClick = onClick,
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             shape = buttonShape,
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(0.dp)
         ) {
             Image(
                 painter = painterResource(id = image),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(imageSize)
+                contentDescription = "Icon button",
+                modifier = Modifier.size(imageSize)
+
             )
         }
     }
