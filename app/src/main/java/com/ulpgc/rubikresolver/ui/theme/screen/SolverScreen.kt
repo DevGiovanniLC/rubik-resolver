@@ -56,6 +56,13 @@ fun SolverScreen() {
                 description = "previous move"
             )
             ActionButton(
+                onClick = {
+                    renderer.toggleAnimation()
+                },
+                icon = R.drawable.play_pause,
+                description = "play/pause"
+            )
+            ActionButton(
                 onClick = { renderer.nextMove() },
                 icon = R.drawable.arrow_right,
                 description = "next move"
