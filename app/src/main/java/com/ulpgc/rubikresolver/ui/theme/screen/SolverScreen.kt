@@ -1,6 +1,7 @@
 package com.ulpgc.rubikresolver.ui.theme.screen
 
 import android.opengl.GLSurfaceView
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,14 +9,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.ulpgc.rubikresolver.R
 import com.ulpgc.rubikresolver.model.RubikCube
 import com.ulpgc.rubikresolver.opengl.renderer.SolverRenderer
 
@@ -24,7 +28,8 @@ import com.ulpgc.rubikresolver.opengl.renderer.SolverRenderer
 fun SolverScreen() {
     val renderer = SolverRenderer(mockCube)
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(color = Color(0xFF29A2FF)),
     ) {
         Box(
@@ -41,24 +46,39 @@ fun SolverScreen() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(100.dp)
                 .padding(bottom = 32.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            Button(
-                onClick = { /*TODO*/ },
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text("Prev")
-            }
-            Button(
-                onClick = {
-                    renderer.nextMove()
-                },
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text("Next")
-            }
+            ActionButton(
+                onClick = { renderer.previousMove() },
+                icon = R.drawable.arrow_left,
+                description = "previous move"
+            )
+            ActionButton(
+                onClick = { renderer.nextMove() },
+                icon = R.drawable.arrow_right,
+                description = "next move"
+            )
         }
+    }
+}
+
+@Composable
+fun ActionButton(
+    onClick: () -> Unit,
+    icon: Int,
+    description: String
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+        modifier = Modifier.padding(8.dp)
+    ) {
+        Image(
+            painter = painterResource(id = icon),
+            contentDescription = description
+        )
     }
 }
 
