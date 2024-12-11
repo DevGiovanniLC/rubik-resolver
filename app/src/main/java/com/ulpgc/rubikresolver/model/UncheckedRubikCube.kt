@@ -1,7 +1,6 @@
 package com.ulpgc.rubikresolver.model
 
 import com.ulpgc.rubikresolver.model.RubikCube.Face
-import kotlin.collections.get
 
 open class UncheckedRubikCube(private val cube: Array<Array<Array<Char>>>) {
 

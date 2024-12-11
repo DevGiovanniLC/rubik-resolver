@@ -1,6 +1,7 @@
 package com.ulpgc.rubikresolver
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -15,6 +16,7 @@ import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,22 +29,39 @@ import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.ulpgc.rubikresolver.components.CameraPreview
+import com.ulpgc.rubikresolver.components.IconButton
+import com.ulpgc.rubikresolver.services.faceToString
 import com.ulpgc.rubikresolver.ui.theme.RubikResolverTheme
 
 @ExperimentalMaterial3Api
 class CameraActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+
+        var cubeFace = Array(3) { Array(3) { mutableStateOf('r') }}
+        var cubeState = intent.getIntExtra("cubeState", 0)
+
         enableEdgeToEdge()
         if(!hasRequiredPermissions()){
             ActivityCompat.requestPermissions(this, CAMERA_PERMISSIONS, 0)
@@ -64,47 +83,46 @@ class CameraActivity : ComponentActivity() {
                     scaffoldState = scaffoldState,
                     sheetPeekHeight = 0.dp,
                     sheetContent = {}
-                ){
-                    padding ->
-                    Box(modifier = Modifier
-                        .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ){
+                ) { padding ->
+                    Surface(color = Color(0xFF29A2FF)) {
 
-                        CameraPreview(controller = controller,
-                            modifier = Modifier
-                                .fillMaxSize()
-                        )
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.BottomCenter)
-                                .padding(bottom = 100.dp)
-                                .height(100.dp)
-                                .width(100.dp),
-                            horizontalArrangement = Arrangement.SpaceAround
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
                         ) {
-                            Button(
-                                onClick = {
-                                    takePhoto(
-                                        controller = controller,
-                                        onPhotoTaken = { bitmap ->
-                                            onTakePhoto(bitmap)
-                                        },
-                                    )
-                                },
-                                modifier = Modifier.size(50.dp),
-                                shape = CircleShape,
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                            FaceText(cubeState)
+                            Box(
+                                modifier = Modifier
+                                    .size(500.dp),
+                                contentAlignment = Alignment.Center
                             ) {
-
+                                CameraPreview(
+                                    controller = controller,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                )
                             }
+
+                            val context = LocalContext.current
+
+                            IconButton(R.drawable.camera, imageSize = 90.dp, onClick = {
+                                takePhoto(
+                                    controller = controller,
+                                    onPhotoTaken = { bitmap ->
+                                        onTakePhoto(bitmap)
+                                    },
+                                )
+
+                                startActivity(
+                                    Intent(context, CheckSideActivity::class.java)
+                                        .putExtra("cubeState", cubeState)
+                                        .putExtra("cubeFace", faceToString(cubeFace))
+                                )
+                            }, modifier = Modifier.padding(20.dp))
                         }
                     }
                 }
-
-
             }
         }
     }
@@ -158,4 +176,30 @@ class CameraActivity : ComponentActivity() {
         Log.d("BitmapProperties", "Density: $density")
     }
 
+    @Composable
+    private fun FaceText(cubeState : Int){
+        var text = ""
+        when(cubeState){
+            0 -> text = "Up Face"
+            1 -> text = "Right Face"
+            2 -> text = "Front Face"
+            3 -> text = "Down Face"
+            4 -> text = "Left Face"
+            5 -> text = "Back Face"
+        }
+        Text(
+            text = text,
+            style = TextStyle(
+                fontSize = 50.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                shadow = Shadow(
+                    color = Color.Black,
+                    offset = Offset(3f, 3f),
+                    blurRadius = 4f
+                ),
+                background = Color.Transparent
+            )
+        )
+    }
 }

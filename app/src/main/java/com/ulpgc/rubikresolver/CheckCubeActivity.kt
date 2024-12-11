@@ -27,6 +27,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ulpgc.rubikresolver.components.FaceGroup
 import com.ulpgc.rubikresolver.components.MainButton
+import com.ulpgc.rubikresolver.model.RubikCube
+import com.ulpgc.rubikresolver.services.arrayOfCharToColors
+import com.ulpgc.rubikresolver.services.arrayOfColorToChar
 
 class CheckCubeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +63,13 @@ class CheckCubeActivity : ComponentActivity() {
 
     @Composable
     fun RubikCross() {
-        val faceColor = remember { Array(3) { Array(3) { mutableStateOf(Color.Gray) } } }
+        val upFace = RubikCube.RubikBuilder.getFace(RubikCube.Face.UP)
+        val rightFace = RubikCube.RubikBuilder.getFace(RubikCube.Face.RIGHT)
+        val frontFace = RubikCube.RubikBuilder.getFace(RubikCube.Face.FRONT)
+        val downFace = RubikCube.RubikBuilder.getFace(RubikCube.Face.DOWN)
+        val leftFace = RubikCube.RubikBuilder.getFace(RubikCube.Face.LEFT)
+        val backFace = RubikCube.RubikBuilder.getFace(RubikCube.Face.BACK)
+
 
         val screenWidth = LocalConfiguration.current.screenWidthDp.dp
         //val screenHeight = LocalConfiguration.current.screenHeightDp.dp
@@ -80,7 +89,7 @@ class CheckCubeActivity : ComponentActivity() {
 
                 Row {
                     Spacer(modifier = Modifier.width(space))
-                    FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize))
+                    FaceGroup(colorArray = arrayOfCharToColors(upFace), tileModifier = Modifier.size(tileSize))
                 }
 
                 // Fila central
@@ -88,15 +97,15 @@ class CheckCubeActivity : ComponentActivity() {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize)) // Izquierda
-                    FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize)) // Centro
-                    FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize)) // Derecha
-                    FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize)) // Naranja
+                    FaceGroup(colorArray = arrayOfCharToColors(leftFace), tileModifier = Modifier.size(tileSize))
+                    FaceGroup(colorArray = arrayOfCharToColors(frontFace), tileModifier = Modifier.size(tileSize))
+                    FaceGroup(colorArray = arrayOfCharToColors(rightFace), tileModifier = Modifier.size(tileSize))
+                    FaceGroup(colorArray = arrayOfCharToColors(backFace), tileModifier = Modifier.size(tileSize))
                 }
 
                 Row {
                     Spacer(modifier = Modifier.width(space))
-                    FaceGroup(colorArray = faceColor, tileModifier = Modifier.size(tileSize))
+                    FaceGroup(colorArray = arrayOfCharToColors(downFace), tileModifier = Modifier.size(tileSize))
                 }
             }
 

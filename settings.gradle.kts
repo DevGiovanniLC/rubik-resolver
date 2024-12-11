@@ -25,3 +25,4 @@ dependencyResolutionManagement {
 rootProject.name = "Rubik resolver"
 include(":app")
 include(":opencv3")
+include(":opencv")

@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ulpgc.rubikresolver.components.IconButton
 import com.ulpgc.rubikresolver.components.MainButton
+import com.ulpgc.rubikresolver.model.RubikCube
 import com.ulpgc.rubikresolver.ui.theme.RubikResolverTheme
 import org.opencv.android.OpenCVLoader
 
@@ -109,9 +110,7 @@ class MainActivity : ComponentActivity() {
 
         val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
-        val launcher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.StartActivityForResult()
-        ) { }
+
 
         val context = LocalContext.current
 
@@ -126,17 +125,17 @@ class MainActivity : ComponentActivity() {
         ) {
             MainButton(
                 text = "Camera",
-                onClick = { launcher.launch(Intent(context, CameraActivity::class.java)) }
+                onClick = { startActivity(Intent(context, CameraActivity::class.java)) }
             )
 
             MainButton(
                 text = "Check Side",
-                onClick = { launcher.launch(Intent(context, CheckSideActivity::class.java)) }
+                onClick = { startActivity(Intent(context, CheckSideActivity::class.java)) }
             )
 
             MainButton(
                 text = "Check Cube",
-                onClick = { launcher.launch(Intent(context, CheckCubeActivity::class.java)) }
+                onClick = { startActivity(Intent(context, CheckCubeActivity::class.java)) }
             )
 
 
