@@ -102,27 +102,27 @@ class RubikCubeChecker(private val rubikCube: UncheckedRubikCube) {
         )
 
         val leftUPBackCorner = charArrayOf(
-            rubikCube.getFace(Face.BACK)[0][0],
-            rubikCube.getFace(Face.UP)[0][2],
-            rubikCube.getFace(Face.RIGHT)[0][2]
-        )
-
-        val rightUPBackCorner = charArrayOf(
             rubikCube.getFace(Face.BACK)[0][2],
             rubikCube.getFace(Face.UP)[0][0],
             rubikCube.getFace(Face.LEFT)[0][0]
         )
 
-        val leftDownBackCorner = charArrayOf(
-            rubikCube.getFace(Face.BACK)[2][0],
-            rubikCube.getFace(Face.DOWN)[0][0],
-            rubikCube.getFace(Face.RIGHT)[2][2]
+        val rightUPBackCorner = charArrayOf(
+            rubikCube.getFace(Face.BACK)[0][0],
+            rubikCube.getFace(Face.UP)[0][2],
+            rubikCube.getFace(Face.RIGHT)[0][2]
         )
 
-        val rightDownBackCorner = charArrayOf(
+        val leftDownBackCorner = charArrayOf(
             rubikCube.getFace(Face.BACK)[2][2],
             rubikCube.getFace(Face.DOWN)[2][0],
             rubikCube.getFace(Face.LEFT)[2][0]
+        )
+
+        val rightDownBackCorner = charArrayOf(
+            rubikCube.getFace(Face.BACK)[2][0],
+            rubikCube.getFace(Face.DOWN)[2][2],
+            rubikCube.getFace(Face.RIGHT)[2][2]
         )
 
         if (!checkCornerDifference(leftUPFrontCorner)) {
@@ -130,15 +130,15 @@ class RubikCubeChecker(private val rubikCube: UncheckedRubikCube) {
         }
 
         if(!checkCornerDifference(rightUPFrontCorner)) {
-            throw RubikCubeError("Right up front corner color is not correct ${leftUPBackCorner[0]} ${leftUPBackCorner[1]} ${leftUPBackCorner[2]} must be different")
+            throw RubikCubeError("Right up front corner color is not correct ${rightUPFrontCorner[0]} ${rightUPFrontCorner[1]} ${rightUPFrontCorner[2]} must be different")
         }
 
         if(!checkCornerDifference(leftDownFrontCorner)) {
-            throw RubikCubeError("Left down front corner color is not correct ${leftDownBackCorner[0]} ${leftDownBackCorner[1]} ${leftDownBackCorner[2]} must be different")
+            throw RubikCubeError("Left down front corner color is not correct ${leftDownFrontCorner[0]} ${leftDownFrontCorner[1]} ${leftDownFrontCorner[2]} must be different")
         }
 
         if(!checkCornerDifference(rightDownFrontCorner)) {
-            throw RubikCubeError("Right down front corner color is not correct ${rightDownBackCorner[0]} ${rightDownBackCorner[1]} ${rightDownBackCorner[2]} must be different")
+            throw RubikCubeError("Right down front corner color is not correct ${rightDownFrontCorner[0]} ${rightDownFrontCorner[1]} ${rightDownFrontCorner[2]} must be different")
         }
 
         if(!checkCornerDifference(leftUPBackCorner)) {
