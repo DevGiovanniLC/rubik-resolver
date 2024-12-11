@@ -77,6 +77,7 @@ class RubikSolverTest {
                 arrayOf('L', 'L', 'L'),
                 arrayOf('L', 'L', 'L')))
             .build()
+        print(cube.getFace(RubikCube.Face.BACK).flatten())
         val solver = RubikSolver()
         val solution = solver.solveToString(cube)
         val solutionExpected = "R' "

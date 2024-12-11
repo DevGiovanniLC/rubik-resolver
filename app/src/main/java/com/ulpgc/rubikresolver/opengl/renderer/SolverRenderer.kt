@@ -6,10 +6,12 @@ import android.opengl.Matrix
 import com.ulpgc.rubikresolver.model.RubikCube
 import com.ulpgc.rubikresolver.model.RubikCube.Face.*
 import com.ulpgc.rubikresolver.opengl.objects.GLRubikCube
+import com.ulpgc.rubikresolver.services.RubikCubeMovement
+import com.ulpgc.rubikresolver.services.RubikSolver
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class SolverRenderer : GLSurfaceView.Renderer {
+class SolverRenderer(private var cube: RubikCube) : GLSurfaceView.Renderer {
     private lateinit var glCube: GLRubikCube
     private val viewMatrix = FloatArray(16)
     private val vPMatrix = FloatArray(16)
@@ -18,57 +20,30 @@ class SolverRenderer : GLSurfaceView.Renderer {
     private var animationFace = FRONT
     private var animateCounterClockwise = 1
     private var rotationAngle = 0f
+    private val solver = RubikSolver()
+    private lateinit var solutionMoves: List<String>
+    private var currentMove = 0
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig?) {
         // Set the background frame color
         GLES20.glClearColor(0.157f, 0.627f, 1.0f, 1.0f)
         // Set the camera position (View matrix)
         Matrix.setLookAtM(viewMatrix, 0, 4.0f, 4.0f, 4.0f, 2.0f, 2.0f, 2.0f, 0f, 1.0f, 0f)
-        val mockCube = RubikCube.RubikBuilder
-            .setFace(
-                RubikCube.Face.FRONT, arrayOf(
-                    arrayOf('F', 'F', 'F'),
-                    arrayOf('F', 'F', 'F'),
-                    arrayOf('F', 'F', 'F')
-                )
-            )
-            .setFace(
-                RubikCube.Face.BACK, arrayOf(
-                    arrayOf('B', 'B', 'B'),
-                    arrayOf('B', 'B', 'B'),
-                    arrayOf('B', 'B', 'B')
-                )
-            )
-            .setFace(
-                RubikCube.Face.LEFT, arrayOf(
-                    arrayOf('L', 'L', 'L'),
-                    arrayOf('L', 'L', 'L'),
-                    arrayOf('L', 'L', 'L')
-                )
-            )
-            .setFace(
-                RubikCube.Face.RIGHT, arrayOf(
-                    arrayOf('R', 'R', 'R'),
-                    arrayOf('R', 'R', 'R'),
-                    arrayOf('R', 'R', 'R')
-                )
-            )
-            .setFace(
-                RubikCube.Face.UP, arrayOf(
-                    arrayOf('U', 'U', 'U'),
-                    arrayOf('U', 'U', 'U'),
-                    arrayOf('U', 'U', 'U')
-                )
-            )
-            .setFace(
-                RubikCube.Face.DOWN, arrayOf(
-                    arrayOf('D', 'D', 'D'),
-                    arrayOf('D', 'D', 'D'),
-                    arrayOf('D', 'D', 'D')
-                )
-            )
-            .build()
-        glCube = GLRubikCube(mockCube)
-        performMove('D', true)
+        glCube = GLRubikCube(cube)
+        solutionMoves = expandSolution(solver.solve(cube))
+    }
+
+    private fun expandSolution(solve: List<String>): List<String> {
+        val expandedMoves = mutableListOf<String>()
+
+        for (move in solve) {
+            if (move.length == 1 || (move.length == 2) && move[1] == '\'') {
+                expandedMoves.add(move)
+                continue
+            }
+            expandedMoves.add(move.take(move.length - 1))
+            expandedMoves.add(move.take(move.length - 1))
+        }
+        return expandedMoves
     }
 
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -100,15 +75,17 @@ class SolverRenderer : GLSurfaceView.Renderer {
             return
         }
         if (rotationAngle >= 90) {
-            animate = false
             rotationAngle = 0f
+            cube = RubikCubeMovement.applyMove(cube, solutionMoves[currentMove - 1])
+            glCube = GLRubikCube(cube)
+            animate = false
             return
         }
         rotationAngle += 1.5f
         glCube.rotateFace(animationFace, rotationAngle * animateCounterClockwise)
     }
 
-    fun performMove(move: Char, clockwise: Boolean = false) {
+    private fun performMove(move: Char, clockwise: Boolean = false) {
         animate = true
         animateCounterClockwise = if (clockwise) -1 else 1
         animationFace = when (move) {
@@ -122,5 +99,31 @@ class SolverRenderer : GLSurfaceView.Renderer {
                 animate = false; FRONT
             }
         }
+    }
+
+    private fun performMove(move: String) {
+        when (move) {
+            "F" -> performMove('F', true)
+            "F'" -> performMove('F', false)
+            "B" -> performMove('B', true)
+            "B'" -> performMove('B', false)
+            "L" -> performMove('L', true)
+            "L'" -> performMove('L', false)
+            "R" -> performMove('R', true)
+            "R'" -> performMove('R', false)
+            "U" -> performMove('U', true)
+            "U'" -> performMove('U', false)
+            "D" -> performMove('D', true)
+            "D'" -> performMove('D', false)
+        }
+    }
+
+    fun nextMove() {
+        if (currentMove >= solutionMoves.size || animate) {
+            return
+        }
+        val move = solutionMoves[currentMove]
+        performMove(move)
+        currentMove++
     }
 }

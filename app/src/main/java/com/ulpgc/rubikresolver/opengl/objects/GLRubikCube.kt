@@ -14,12 +14,12 @@ class GLRubikCube(private val rubikCubeModel: RubikCube) {
     private var rotatingAngle: Float = 0f
 
     init {
-        paintFace(RubikCube.Face.FRONT) { index -> index % 9 in 6..8 } // Front face
-        paintFace(RubikCube.Face.BACK) { index -> index % 9 in 0..2 }  // Back face
-        paintFace(RubikCube.Face.LEFT) { index -> index % 3 == 0 }     // Left face
-        paintFace(RubikCube.Face.RIGHT) { index -> index % 3 == 2 }    // Right face
-        paintFace(RubikCube.Face.UP) { index -> index / 9 == 2 }      // Top face
-        paintFace(RubikCube.Face.DOWN) { index -> index / 9 == 0 }   // Bottom face
+        paintFace(FRONT) // Front face
+        paintFace(BACK)  // Back face
+        paintFace(LEFT)     // Left face
+        paintFace(RIGHT)    // Right face
+        paintFace(UP)      // Top face
+        paintFace(DOWN)   // Bottom face
     }
 
     fun draw(mvpMatrix: FloatArray) {
@@ -102,8 +102,8 @@ class GLRubikCube(private val rubikCubeModel: RubikCube) {
         return floatArrayOf(x.toFloat(), y.toFloat(), z.toFloat())
     }
 
-    private fun paintFace(face: Face, filter: (Int) -> Boolean) {
-        val faceCubes = cubes.filterIndexed { index, _ -> filter(index) }
+    private fun paintFace(face: Face) {
+        val faceCubes = getCubeModelsFromFace(face)
         val faceColors = rubikCubeModel.getFace(face).flatten()
         for ((cube, charColor) in faceCubes.zip(faceColors)) {
             when (face) {
@@ -114,6 +114,17 @@ class GLRubikCube(private val rubikCubeModel: RubikCube) {
                 UP -> cube.upColor = toColor(charColor)
                 DOWN -> cube.downColor = toColor(charColor)
             }
+        }
+    }
+
+    private fun getCubeModelsFromFace(face: Face): List<Cube> {
+        return when (face) {
+            FRONT -> listOf(cubes[24], cubes[25], cubes[26], cubes[15], cubes[16], cubes[17], cubes[6], cubes[7], cubes[8])
+            BACK -> listOf(cubes[20], cubes[19], cubes[18], cubes[11], cubes[10], cubes[9], cubes[2], cubes[1], cubes[0])
+            LEFT -> listOf(cubes[18], cubes[21], cubes[24], cubes[9], cubes[12], cubes[15], cubes[0], cubes[3], cubes[6])
+            RIGHT -> listOf(cubes[26], cubes[23], cubes[20], cubes[17], cubes[14], cubes[11], cubes[8], cubes[5], cubes[2])
+            UP -> listOf(cubes[18], cubes[19], cubes[20], cubes[21], cubes[22], cubes[23], cubes[24], cubes[25], cubes[26])
+            DOWN -> listOf(cubes[6], cubes[7], cubes[8], cubes[3], cubes[4], cubes[5], cubes[0], cubes[1], cubes[2])
         }
     }
 }
