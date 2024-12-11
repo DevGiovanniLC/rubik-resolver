@@ -12,6 +12,7 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 class SolverRenderer(private var cube: RubikCube) : GLSurfaceView.Renderer {
+    private var isPlayAnimationEnabled: Boolean = false
     private lateinit var glCube: GLRubikCube
     private val viewMatrix = FloatArray(16)
     private val vPMatrix = FloatArray(16)
@@ -72,6 +73,9 @@ class SolverRenderer(private var cube: RubikCube) : GLSurfaceView.Renderer {
     }
 
     private fun animate() {
+        if (isPlayAnimationEnabled && !isAnimationInProgress) {
+            nextMove()
+        }
         if (rotationAngle >= 90) {
             rotationAngle = 0f
             cube = RubikCubeMovement.applyMove(cube, appliedMove)
@@ -155,5 +159,9 @@ class SolverRenderer(private var cube: RubikCube) : GLSurfaceView.Renderer {
             "D'" -> "D"
             else -> ""
         }
+    }
+
+    fun toggleAnimation() {
+        isPlayAnimationEnabled = !isPlayAnimationEnabled
     }
 }
