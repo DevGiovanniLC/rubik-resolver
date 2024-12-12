@@ -32,7 +32,7 @@ class SolverRenderer(private var cube: RubikCube) : GLSurfaceView.Renderer {
         // Set the camera position (View matrix)
         Matrix.setLookAtM(viewMatrix, 0, 4.0f, 4.0f, 4.0f, 2.0f, 2.0f, 2.0f, 0f, 1.0f, 0f)
         glCube = GLRubikCube(cube)
-        Log.d("RubikSolver", solver.solve(cube).toString())
+        Log.d("SOLVE", solver.solve(cube).toString())
         solutionMoves = expandSolution(solver.solve(cube))
     }
 

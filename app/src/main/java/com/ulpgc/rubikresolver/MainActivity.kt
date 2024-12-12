@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(screenHeight * 0.05f),
             ) {
-                Spacer(modifier = Modifier.height(screenHeight * 0.05f))
+                Spacer(modifier = Modifier.height(screenHeight * 0.25f))
 
                 Title()
 
@@ -121,10 +121,10 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             MainButton(
-                text = "Camera",
+                text = "Start",
                 onClick = { startActivity(Intent(context, CameraActivity::class.java)) }
             )
-
+/*
             MainButton(
                 text = "Check Side",
                 onClick = { startActivity(Intent(context, CheckSideActivity::class.java)) }
@@ -150,8 +150,8 @@ class MainActivity : ComponentActivity() {
             ) {
                 IconButton(R.drawable.gear, imageSize = screenHeight * 0.12f, onClick = {})
             }
+*/
         }
-
     }
 
     object ContextProvider {
