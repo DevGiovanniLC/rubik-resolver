@@ -46,4 +46,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_check_side">CheckSideActivity</string>
     <string name="title_activity_check_cube">CheckCubeActivity</string>
+    <string name="title_activity_error">ErrorActivity</string>
 </resources>

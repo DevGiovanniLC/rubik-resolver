@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,10 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.ulpgc.rubikresolver.R
-import com.ulpgc.rubikresolver.model.RubikCube
-import com.ulpgc.rubikresolver.services.arrayOfCharToColors
 
 @Preview
 @Composable
@@ -91,7 +87,7 @@ fun IconButton(image:Int = R.drawable.gear,  imageSize: Dp = 70.dp,onClick: () -
     val buttonShape = CircleShape
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(imageSize)
             .border(width = 2.dp, color = Color.Black, shape = buttonShape) // Aplica borde circular
     ) {
@@ -99,7 +95,7 @@ fun IconButton(image:Int = R.drawable.gear,  imageSize: Dp = 70.dp,onClick: () -
             onClick = onClick,
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             shape = buttonShape,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(0.dp)
         ) {
@@ -193,7 +189,7 @@ fun FaceButtonGroup(
 @Composable
 fun FaceGroup(
     colorArray: Array<Array<MutableState<Color>>>,
-    onTileClicked: () -> Unit = {},
+    onClick: () -> Unit = {},
     tileModifier: Modifier = Modifier,
 ) {
 
@@ -208,7 +204,7 @@ fun FaceGroup(
                         color = cell.value,
                         modifier = tileModifier,
                         onClick = {
-                            onTileClicked()
+                            onClick()
                         }
                     )
 

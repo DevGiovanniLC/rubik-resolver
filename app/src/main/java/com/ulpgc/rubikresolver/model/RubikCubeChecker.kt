@@ -18,14 +18,14 @@ class RubikCubeChecker(private val rubikCube: UncheckedRubikCube) {
 
     private fun checkCenter(): Boolean {
         if (!checkCenterDifference(
-            rubikCube.getFace(Face.UP)[1][1],
-            rubikCube.getFace(Face.DOWN)[1][1],
-            rubikCube.getFace(Face.LEFT)[1][1],
-            rubikCube.getFace(Face.RIGHT)[1][1],
-            rubikCube.getFace(Face.FRONT)[1][1],
-            rubikCube.getFace(Face.BACK)[1][1]
+            rubikCube.getFace(Face.UP.value)[1][1],
+            rubikCube.getFace(Face.DOWN.value)[1][1],
+            rubikCube.getFace(Face.LEFT.value)[1][1],
+            rubikCube.getFace(Face.RIGHT.value)[1][1],
+            rubikCube.getFace(Face.FRONT.value)[1][1],
+            rubikCube.getFace(Face.BACK.value)[1][1]
         )) {
-            throw RubikCubeError("Center color is not correct ${rubikCube.getFace(Face.UP)[1][0]} ${rubikCube.getFace(Face.DOWN)[1][0]} ${rubikCube.getFace(Face.LEFT)[1][0]} ${rubikCube.getFace(Face.RIGHT)[1][0]} ${rubikCube.getFace(Face.FRONT)[1][0]} ${rubikCube.getFace(Face.BACK)[1][0]} must be different")
+            throw RubikCubeError("Center color is not correct ${rubikCube.getFace(Face.UP.value)[1][0]} ${rubikCube.getFace(Face.DOWN.value)[1][0]} ${rubikCube.getFace(Face.LEFT.value)[1][0]} ${rubikCube.getFace(Face.RIGHT.value)[1][0]} ${rubikCube.getFace(Face.FRONT.value)[1][0]} ${rubikCube.getFace(Face.BACK.value)[1][0]} must be different")
         }
 
         return true
@@ -33,24 +33,24 @@ class RubikCubeChecker(private val rubikCube: UncheckedRubikCube) {
 
     private fun checkEdges(): Boolean {
         val frontEdges = listOf(
-            charArrayOf(rubikCube.getFace(Face.FRONT)[1][0],rubikCube.getFace(Face.LEFT)[1][2]),
-            charArrayOf(rubikCube.getFace(Face.FRONT)[0][1],rubikCube.getFace(Face.UP)[2][1]),
-            charArrayOf(rubikCube.getFace(Face.FRONT)[1][2],rubikCube.getFace(Face.RIGHT)[1][0]),
-            charArrayOf(rubikCube.getFace(Face.FRONT)[2][1],rubikCube.getFace(Face.DOWN)[0][1]),
+            charArrayOf(rubikCube.getFace(Face.FRONT.value)[1][0],rubikCube.getFace(Face.LEFT.value)[1][2]),
+            charArrayOf(rubikCube.getFace(Face.FRONT.value)[0][1],rubikCube.getFace(Face.UP.value)[2][1]),
+            charArrayOf(rubikCube.getFace(Face.FRONT.value)[1][2],rubikCube.getFace(Face.RIGHT.value)[1][0]),
+            charArrayOf(rubikCube.getFace(Face.FRONT.value)[2][1],rubikCube.getFace(Face.DOWN.value)[0][1]),
         )
 
         val backEdges = listOf(
-            charArrayOf(rubikCube.getFace(Face.BACK)[1][0],rubikCube.getFace(Face.RIGHT)[1][2]),
-            charArrayOf(rubikCube.getFace(Face.BACK)[0][1],rubikCube.getFace(Face.UP)[0][1]),
-            charArrayOf(rubikCube.getFace(Face.BACK)[1][2],rubikCube.getFace(Face.LEFT)[1][0]),
-            charArrayOf(rubikCube.getFace(Face.BACK)[2][1],rubikCube.getFace(Face.DOWN)[2][1]),
+            charArrayOf(rubikCube.getFace(Face.BACK.value)[1][0],rubikCube.getFace(Face.RIGHT.value)[1][2]),
+            charArrayOf(rubikCube.getFace(Face.BACK.value)[0][1],rubikCube.getFace(Face.UP.value)[0][1]),
+            charArrayOf(rubikCube.getFace(Face.BACK.value)[1][2],rubikCube.getFace(Face.LEFT.value)[1][0]),
+            charArrayOf(rubikCube.getFace(Face.BACK.value)[2][1],rubikCube.getFace(Face.DOWN.value)[2][1]),
         )
 
         val leftAndRightEdges = listOf(
-            charArrayOf(rubikCube.getFace(Face.LEFT)[0][1],rubikCube.getFace(Face.UP)[1][0]),
-            charArrayOf(rubikCube.getFace(Face.LEFT)[2][1],rubikCube.getFace(Face.DOWN)[1][0]),
-            charArrayOf(rubikCube.getFace(Face.RIGHT)[0][1],rubikCube.getFace(Face.UP)[1][2]),
-            charArrayOf(rubikCube.getFace(Face.RIGHT)[2][1],rubikCube.getFace(Face.DOWN)[1][2]),
+            charArrayOf(rubikCube.getFace(Face.LEFT.value)[0][1],rubikCube.getFace(Face.UP.value)[1][0]),
+            charArrayOf(rubikCube.getFace(Face.LEFT.value)[2][1],rubikCube.getFace(Face.DOWN.value)[1][0]),
+            charArrayOf(rubikCube.getFace(Face.RIGHT.value)[0][1],rubikCube.getFace(Face.UP.value)[1][2]),
+            charArrayOf(rubikCube.getFace(Face.RIGHT.value)[2][1],rubikCube.getFace(Face.DOWN.value)[1][2]),
         )
 
         for (edge in frontEdges) {
@@ -78,51 +78,50 @@ class RubikCubeChecker(private val rubikCube: UncheckedRubikCube) {
     private fun checkCorners(): Boolean {
 
         val leftUPFrontCorner = charArrayOf(
-            rubikCube.getFace(Face.FRONT)[0][0],
-            rubikCube.getFace(Face.UP)[2][0],
-            rubikCube.getFace(Face.LEFT)[0][2]
+            rubikCube.getFace(Face.FRONT.value)[0][0],
+            rubikCube.getFace(Face.UP.value)[2][0],
+            rubikCube.getFace(Face.LEFT.value)[0][2]
         )
 
         val rightUPFrontCorner = charArrayOf(
-            rubikCube.getFace(Face.FRONT)[0][2],
-            rubikCube.getFace(Face.UP)[2][2],
-            rubikCube.getFace(Face.RIGHT)[0][0]
+            rubikCube.getFace(Face.FRONT.value)[0][2],
+            rubikCube.getFace(Face.UP.value)[2][2],
+            rubikCube.getFace(Face.RIGHT.value)[0][0]
         )
 
         val leftDownFrontCorner = charArrayOf(
-            rubikCube.getFace(Face.FRONT)[2][0],
-            rubikCube.getFace(Face.DOWN)[0][0],
-            rubikCube.getFace(Face.LEFT)[2][2]
+            rubikCube.getFace(Face.FRONT.value)[2][0],
+            rubikCube.getFace(Face.DOWN.value)[0][0],
+            rubikCube.getFace(Face.LEFT.value)[2][2]
         )
-
         val rightDownFrontCorner = charArrayOf(
-            rubikCube.getFace(Face.FRONT)[2][2],
-            rubikCube.getFace(Face.DOWN)[0][2],
-            rubikCube.getFace(Face.RIGHT)[2][0]
+            rubikCube.getFace(Face.FRONT.value)[2][2],
+            rubikCube.getFace(Face.DOWN.value)[0][2],
+            rubikCube.getFace(Face.RIGHT.value)[2][0]
         )
 
         val leftUPBackCorner = charArrayOf(
-            rubikCube.getFace(Face.BACK)[0][0],
-            rubikCube.getFace(Face.UP)[0][2],
-            rubikCube.getFace(Face.RIGHT)[0][2]
+            rubikCube.getFace(Face.BACK.value)[0][2],
+            rubikCube.getFace(Face.UP.value)[0][0],
+            rubikCube.getFace(Face.LEFT.value)[0][0]
         )
 
         val rightUPBackCorner = charArrayOf(
-            rubikCube.getFace(Face.BACK)[0][2],
-            rubikCube.getFace(Face.UP)[0][0],
-            rubikCube.getFace(Face.LEFT)[0][0]
+            rubikCube.getFace(Face.BACK.value)[0][0],
+            rubikCube.getFace(Face.UP.value)[0][2],
+            rubikCube.getFace(Face.RIGHT.value)[0][2]
         )
 
         val leftDownBackCorner = charArrayOf(
-            rubikCube.getFace(Face.BACK)[2][0],
-            rubikCube.getFace(Face.DOWN)[0][0],
-            rubikCube.getFace(Face.RIGHT)[2][2]
+            rubikCube.getFace(Face.BACK.value)[2][2],
+            rubikCube.getFace(Face.DOWN.value)[2][0],
+            rubikCube.getFace(Face.LEFT.value)[2][0]
         )
 
         val rightDownBackCorner = charArrayOf(
-            rubikCube.getFace(Face.BACK)[2][2],
-            rubikCube.getFace(Face.DOWN)[2][0],
-            rubikCube.getFace(Face.LEFT)[2][0]
+            rubikCube.getFace(Face.BACK.value)[2][0],
+            rubikCube.getFace(Face.DOWN.value)[2][2],
+            rubikCube.getFace(Face.RIGHT.value)[2][2]
         )
 
         if (!checkCornerDifference(leftUPFrontCorner)) {
@@ -130,15 +129,15 @@ class RubikCubeChecker(private val rubikCube: UncheckedRubikCube) {
         }
 
         if(!checkCornerDifference(rightUPFrontCorner)) {
-            throw RubikCubeError("Right up front corner color is not correct ${leftUPBackCorner[0]} ${leftUPBackCorner[1]} ${leftUPBackCorner[2]} must be different")
+            throw RubikCubeError("Right up front corner color is not correct ${rightUPFrontCorner[0]} ${rightUPFrontCorner[1]} ${rightUPFrontCorner[2]} must be different")
         }
 
         if(!checkCornerDifference(leftDownFrontCorner)) {
-            throw RubikCubeError("Left down front corner color is not correct ${leftDownBackCorner[0]} ${leftDownBackCorner[1]} ${leftDownBackCorner[2]} must be different")
+            throw RubikCubeError("Left down front corner color is not correct ${leftDownFrontCorner[0]} ${leftDownFrontCorner[1]} ${leftDownFrontCorner[2]} must be different")
         }
 
         if(!checkCornerDifference(rightDownFrontCorner)) {
-            throw RubikCubeError("Right down front corner color is not correct ${rightDownBackCorner[0]} ${rightDownBackCorner[1]} ${rightDownBackCorner[2]} must be different")
+            throw RubikCubeError("Right down front corner color is not correct ${rightDownFrontCorner[0]} ${rightDownFrontCorner[1]} ${rightDownFrontCorner[2]} must be different")
         }
 
         if(!checkCornerDifference(leftUPBackCorner)) {

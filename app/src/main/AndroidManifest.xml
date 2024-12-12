@@ -21,6 +21,16 @@
         android:theme="@style/Theme.RubikResolver"
         tools:targetApi="31">
         <activity
+            android:name=".ErrorActivity"
+            android:exported="false"
+            android:label="@string/title_activity_error"
+            android:theme="@style/Theme.RubikResolver" />
+        <activity
+            android:name=".SolverActivity"
+            android:exported="false"
+            android:label="@string/title_activity_check_cube"
+            android:theme="@style/Theme.RubikResolver" />
+        <activity
             android:name=".CheckCubeActivity"
             android:exported="false"
             android:label="@string/title_activity_check_cube"

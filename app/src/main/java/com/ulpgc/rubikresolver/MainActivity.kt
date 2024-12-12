@@ -7,17 +7,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,7 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ulpgc.rubikresolver.components.IconButton
 import com.ulpgc.rubikresolver.components.MainButton
 import com.ulpgc.rubikresolver.ui.theme.RubikResolverTheme
 import org.opencv.android.OpenCVLoader
@@ -69,7 +64,7 @@ class MainActivity : ComponentActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(screenHeight * 0.05f),
             ) {
-                Spacer(modifier = Modifier.height(screenHeight * 0.05f))
+                Spacer(modifier = Modifier.height(screenHeight * 0.25f))
 
                 Title()
 
@@ -109,9 +104,7 @@ class MainActivity : ComponentActivity() {
 
         val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
-        val launcher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.StartActivityForResult()
-        ) { }
+
 
         val context = LocalContext.current
 
@@ -125,20 +118,24 @@ class MainActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             MainButton(
-                text = "Camera",
-                onClick = { launcher.launch(Intent(context, CameraActivity::class.java)) }
+                text = "Start",
+                onClick = { startActivity(Intent(context, CameraActivity::class.java)) }
             )
-
+/*
             MainButton(
                 text = "Check Side",
-                onClick = { launcher.launch(Intent(context, CheckSideActivity::class.java)) }
+                onClick = { startActivity(Intent(context, CheckSideActivity::class.java)) }
             )
 
             MainButton(
                 text = "Check Cube",
-                onClick = { launcher.launch(Intent(context, CheckCubeActivity::class.java)) }
+                onClick = { startActivity(Intent(context, CheckCubeActivity::class.java)) }
             )
 
+            MainButton(
+                text = "OpenGL",
+                onClick = { startActivity(Intent(context, SolverActivity::class.java)) }
+            )
 
             Spacer(modifier = Modifier.weight(1f))
 
@@ -150,8 +147,8 @@ class MainActivity : ComponentActivity() {
             ) {
                 IconButton(R.drawable.gear, imageSize = screenHeight * 0.12f, onClick = {})
             }
+*/
         }
-
     }
 
     object ContextProvider {

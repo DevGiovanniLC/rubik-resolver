@@ -15,27 +15,27 @@ class RubikSolverTest {
     @Test
     fun solvedCubeTest() {
         val cube = RubikCube.RubikBuilder
-            .setFace(RubikCube.Face.UP, arrayOf(
+            .setFace(RubikCube.Face.UP.value, arrayOf(
                 arrayOf('U', 'U', 'U'),
                 arrayOf('U', 'U', 'U'),
                 arrayOf('U', 'U', 'U')))
-            .setFace(RubikCube.Face.RIGHT, arrayOf(
+            .setFace(RubikCube.Face.RIGHT.value, arrayOf(
                 arrayOf('R', 'R', 'R'),
                 arrayOf('R', 'R', 'R'),
                 arrayOf('R', 'R', 'R')))
-            .setFace(RubikCube.Face.DOWN, arrayOf(
+            .setFace(RubikCube.Face.DOWN.value, arrayOf(
                 arrayOf('D', 'D', 'D'),
                 arrayOf('D', 'D', 'D'),
                 arrayOf('D', 'D', 'D')))
-            .setFace(RubikCube.Face.LEFT, arrayOf(
+            .setFace(RubikCube.Face.LEFT.value, arrayOf(
                 arrayOf('L', 'L', 'L'),
                 arrayOf('L', 'L', 'L'),
                 arrayOf('L', 'L', 'L')))
-            .setFace(RubikCube.Face.BACK, arrayOf(
+            .setFace(RubikCube.Face.BACK.value, arrayOf(
                 arrayOf('B', 'B', 'B'),
                 arrayOf('B', 'B', 'B'),
                 arrayOf('B', 'B', 'B')))
-            .setFace(RubikCube.Face.FRONT, arrayOf(
+            .setFace(RubikCube.Face.FRONT.value, arrayOf(
                 arrayOf('F', 'F', 'F'),
                 arrayOf('F', 'F', 'F'),
                 arrayOf('F', 'F', 'F')))
@@ -52,31 +52,32 @@ class RubikSolverTest {
     @Test
     fun unsolvedOneMoveCubeTest() {
         val cube = RubikCube.RubikBuilder
-            .setFace(RubikCube.Face.UP, arrayOf(
+            .setFace(RubikCube.Face.UP.value, arrayOf(
                 arrayOf('U', 'U', 'F'),
                 arrayOf('U', 'U', 'F'),
                 arrayOf('U', 'U', 'F')))
-            .setFace(RubikCube.Face.FRONT, arrayOf(
+            .setFace(RubikCube.Face.FRONT.value, arrayOf(
                 arrayOf('F', 'F', 'D'),
                 arrayOf('F', 'F', 'D'),
                 arrayOf('F', 'F', 'D')))
-            .setFace(RubikCube.Face.DOWN, arrayOf(
+            .setFace(RubikCube.Face.DOWN.value, arrayOf(
                 arrayOf('D', 'D', 'B'),
                 arrayOf('D', 'D', 'B'),
                 arrayOf('D', 'D', 'B')))
-            .setFace(RubikCube.Face.BACK, arrayOf(
+            .setFace(RubikCube.Face.BACK.value, arrayOf(
                 arrayOf('U', 'B', 'B'),
                 arrayOf('U', 'B', 'B'),
                 arrayOf('U', 'B', 'B')))
-            .setFace(RubikCube.Face.RIGHT, arrayOf(
+            .setFace(RubikCube.Face.RIGHT.value, arrayOf(
                 arrayOf('R', 'R', 'R'),
                 arrayOf('R', 'R', 'R'),
                 arrayOf('R', 'R', 'R')))
-            .setFace(RubikCube.Face.LEFT, arrayOf(
+            .setFace(RubikCube.Face.LEFT.value, arrayOf(
                 arrayOf('L', 'L', 'L'),
                 arrayOf('L', 'L', 'L'),
                 arrayOf('L', 'L', 'L')))
             .build()
+        print(cube.getFace(RubikCube.Face.BACK.value).flatten())
         val solver = RubikSolver()
         val solution = solver.solveToString(cube)
         val solutionExpected = "R' "
@@ -104,7 +105,7 @@ class RubikSolverTest {
         assertEquals(stringCube,cube.toString())
 
         val solver = RubikSolver().solveToString(cube)
-        val solutionExpected = "R2 U2 B2 L2 F2 U' L2 R2 B2 R2 D  B2 F  L' F  U2 F' R' D' L2 R' "
+        val solutionExpected = "R2 U2 B2 L2 F2 U' L2 R2 B2 R2 D B2 F L' F U2 F' R' D' L2 R' "
         assertEquals(solutionExpected,solver)
     }
 

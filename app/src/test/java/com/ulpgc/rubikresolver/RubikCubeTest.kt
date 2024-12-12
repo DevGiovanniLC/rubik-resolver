@@ -24,7 +24,7 @@ class RubikCubeTest {
     @Test(expected = RubikFaceError::class)
     fun toStringEmptyFacesErrorTest() {
         val cube = RubikCube.RubikBuilder
-            .setFace(RubikCube.Face.UP, arrayOf(
+            .setFace(RubikCube.Face.UP.value, arrayOf(
                 arrayOf(' ', ' ', ' '),
                 arrayOf(' ', ' ', ' '),
                 arrayOf(' ', ' ', ' ')))
@@ -33,7 +33,7 @@ class RubikCubeTest {
     @Test(expected = RubikFaceError::class)
     fun toStringEmptyPartOfFaceErrorTest() {
         val cube = RubikCube.RubikBuilder
-            .setFace(RubikCube.Face.UP, arrayOf(
+            .setFace(RubikCube.Face.UP.value, arrayOf(
                 arrayOf('U', 'U', 'U'),
                 arrayOf(' ', ' ', ' '),
                 arrayOf(' ', ' ', ' ')))
@@ -42,7 +42,7 @@ class RubikCubeTest {
     @Test(expected = RubikCubeError::class)
     fun toStringOnlyOneFaceErrorTest() {
         val cube = RubikCube.RubikBuilder
-            .setFace(RubikCube.Face.UP, arrayOf(
+            .setFace(RubikCube.Face.UP.value, arrayOf(
                 arrayOf('U', 'U', 'U'),
                 arrayOf('U', 'U', 'U'),
                 arrayOf('U', 'U', 'U')))
@@ -54,27 +54,27 @@ class RubikCubeTest {
     @Test
     fun toStringCorrectTest() {
         val cube = RubikCube.RubikBuilder
-            .setFace(RubikCube.Face.UP, arrayOf(
+            .setFace(RubikCube.Face.UP.value, arrayOf(
                 arrayOf('U', 'U', 'U'),
                 arrayOf('U', 'U', 'U'),
                 arrayOf('U', 'U', 'U')))
-            .setFace(RubikCube.Face.RIGHT, arrayOf(
+            .setFace(RubikCube.Face.RIGHT.value, arrayOf(
                 arrayOf('R', 'R', 'R'),
                 arrayOf('R', 'R', 'R'),
                 arrayOf('R', 'R', 'R')))
-            .setFace(RubikCube.Face.DOWN, arrayOf(
+            .setFace(RubikCube.Face.DOWN.value, arrayOf(
                 arrayOf('D', 'D', 'D'),
                 arrayOf('D', 'D', 'D'),
                 arrayOf('D', 'D', 'D')))
-            .setFace(RubikCube.Face.LEFT, arrayOf(
+            .setFace(RubikCube.Face.LEFT.value, arrayOf(
                 arrayOf('L', 'L', 'L'),
                 arrayOf('L', 'L', 'L'),
                 arrayOf('L', 'L', 'L')))
-            .setFace(RubikCube.Face.BACK, arrayOf(
+            .setFace(RubikCube.Face.BACK.value, arrayOf(
                 arrayOf('B', 'B', 'B'),
                 arrayOf('B', 'B', 'B'),
                 arrayOf('B', 'B', 'B')))
-            .setFace(RubikCube.Face.FRONT, arrayOf(
+            .setFace(RubikCube.Face.FRONT.value, arrayOf(
                 arrayOf('F', 'F', 'F'),
                 arrayOf('F', 'F', 'F'),
                 arrayOf('F', 'F', 'F')))
