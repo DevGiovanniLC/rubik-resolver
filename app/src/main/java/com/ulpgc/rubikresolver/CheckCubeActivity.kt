@@ -1,6 +1,8 @@
 package com.ulpgc.rubikresolver
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,8 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,8 +28,10 @@ import androidx.compose.ui.unit.dp
 import com.ulpgc.rubikresolver.components.FaceGroup
 import com.ulpgc.rubikresolver.components.MainButton
 import com.ulpgc.rubikresolver.model.RubikCube
+import com.ulpgc.rubikresolver.services.addMutableState
+import com.ulpgc.rubikresolver.services.arrayOfCharPositionToCharColor
 import com.ulpgc.rubikresolver.services.arrayOfCharToColors
-import com.ulpgc.rubikresolver.services.arrayOfColorToChar
+import com.ulpgc.rubikresolver.services.faceToString
 
 class CheckCubeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,20 +99,38 @@ class CheckCubeActivity : ComponentActivity() {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    FaceGroup(colorArray = arrayOfCharToColors(leftFace), tileModifier = Modifier.size(tileSize))
-                    FaceGroup(colorArray = arrayOfCharToColors(frontFace), tileModifier = Modifier.size(tileSize))
-                    FaceGroup(colorArray = arrayOfCharToColors(rightFace), tileModifier = Modifier.size(tileSize))
-                    FaceGroup(colorArray = arrayOfCharToColors(backFace), tileModifier = Modifier.size(tileSize))
+                    FaceGroup(colorArray = arrayOfCharToColors(leftFace), tileModifier = Modifier.size(tileSize), onClick = { goFace(RubikCube.Face.LEFT.value, leftFace) })
+                    FaceGroup(colorArray = arrayOfCharToColors(frontFace), tileModifier = Modifier.size(tileSize), onClick = { goFace(RubikCube.Face.FRONT.value, frontFace) })
+                    FaceGroup(colorArray = arrayOfCharToColors(rightFace), tileModifier = Modifier.size(tileSize), onClick = { goFace(RubikCube.Face.RIGHT.value, rightFace) })
+                    FaceGroup(colorArray = arrayOfCharToColors(backFace), tileModifier = Modifier.size(tileSize), onClick = { goFace(RubikCube.Face.BACK.value, backFace) })
                 }
 
                 Row {
                     Spacer(modifier = Modifier.width(space))
-                    FaceGroup(colorArray = arrayOfCharToColors(downFace), tileModifier = Modifier.size(tileSize))
+                    FaceGroup(colorArray = arrayOfCharToColors(downFace), tileModifier = Modifier.size(tileSize), onClick = { goFace(RubikCube.Face.DOWN.value, downFace) })
                 }
             }
 
         }
     }
+
+    fun goFace(cubeState: Int, cubeFace: Array<Array<Char>>) {
+
+        val faceColor = faceToString(
+            arrayOfCharPositionToCharColor(
+                addMutableState(
+                    cubeFace
+                )
+            )
+        )
+        Log.d("FACECOLOR", faceColor)
+
+        startActivity(Intent(this, CheckSideActivity::class.java)
+            .putExtra("cubeState", cubeState)
+            .putExtra("cubeFace", faceColor)
+        )
+    }
+
 }
 
 

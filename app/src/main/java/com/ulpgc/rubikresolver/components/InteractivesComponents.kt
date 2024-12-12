@@ -35,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.ulpgc.rubikresolver.R
-import java.nio.file.WatchEvent
 
 @Preview
 @Composable
@@ -190,7 +189,7 @@ fun FaceButtonGroup(
 @Composable
 fun FaceGroup(
     colorArray: Array<Array<MutableState<Color>>>,
-    onTileClicked: () -> Unit = {},
+    onClick: () -> Unit = {},
     tileModifier: Modifier = Modifier,
 ) {
 
@@ -205,7 +204,7 @@ fun FaceGroup(
                         color = cell.value,
                         modifier = tileModifier,
                         onClick = {
-                            onTileClicked()
+                            onClick()
                         }
                     )
 

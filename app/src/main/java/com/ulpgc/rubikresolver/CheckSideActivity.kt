@@ -5,6 +5,7 @@ package com.ulpgc.rubikresolver
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -46,13 +47,12 @@ class CheckSideActivity : ComponentActivity() {
         var cubeFace = intent.getStringExtra("cubeFace")
         var faceString = stringToMutableStateArray(cubeFace)
         var faceColor = arrayOfCharColorToColor(faceString)
-
+        Log.d("STRINGFACE", cubeFace.toString())
         enableEdgeToEdge()
         setContent {
             MainComponent(faceColor, cubeState)
         }
     }
-
 
 
     @Composable

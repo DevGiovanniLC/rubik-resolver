@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.ulpgc.rubikresolver.components.CameraPreview
+import com.ulpgc.rubikresolver.components.IconButton
 import com.ulpgc.rubikresolver.services.fillFace
 import com.ulpgc.rubikresolver.ui.theme.RubikResolverTheme
 import org.opencv.android.Utils
@@ -108,7 +110,7 @@ class CameraActivity : ComponentActivity() {
                         FaceText(cubeState)
                         Box(
                             modifier = Modifier
-                                .size(screenHeight * 0.7f),
+                                .size(screenHeight * 0.6f),
                             contentAlignment = Alignment.Center
                         ) {
 
@@ -126,23 +128,24 @@ class CameraActivity : ComponentActivity() {
                                 )
                             }
 
-
-
-
                         }
-
-                        val context = LocalContext.current
-                        Button(
-                            onClick = {
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                            val context = LocalContext.current
+                            IconButton(R.drawable.camera, 70.dp, onClick = {
                                 val colors = detectedColors.take(9)
-                                Intent(context, CheckSideActivity::class.java)
-                                    .putExtra("cubeState", cubeState)
-                                    .putExtra("cubeFace", fillFace(colors.toTypedArray()))
-                            },
-                            modifier = Modifier.size(50.dp),
-                            shape = CircleShape,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-                        ) {}
+                                val stringFace = fillFace(colors.toTypedArray())
+
+                                startActivity(
+                                    Intent(context, CheckSideActivity::class.java)
+                                        .putExtra("cubeState", cubeState)
+                                        .putExtra("cubeFace", stringFace)
+                                )
+                            })
+
+                            IconButton(R.drawable.edit, 70.dp, onClick = {
+                                startActivity(Intent(context, CheckCubeActivity::class.java))
+                            })
+                        }
                     }
                 }
             }

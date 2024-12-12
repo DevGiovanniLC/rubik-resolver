@@ -9,7 +9,7 @@ import com.ulpgc.rubikresolver.services.javaRubikSolver.Search
 class RubikSolver : RubikCubeSolver {
     override fun solve(cube: RubikCube): List<String> {
         val string = solveToString(cube)
-        return string.split(" ").filter { it != "" }
+        return string.split(" ").filter { it.isNotEmpty() }
     }
 
     override fun solveToString(cube: RubikCube): String {
@@ -36,6 +36,23 @@ fun arrayOfCharToColors(array: Array<Array<Char>>): Array<Array<MutableState<Col
     }.toTypedArray()
 }
 
+fun arrayOfCharPositionToCharColor(array: Array<Array<MutableState<Char>>>): Array<Array<MutableState<Char>>> {
+    return array.map { row ->
+        row.map { charState ->
+            when (charState.value) {
+                'U' -> mutableStateOf('W')
+                'R' -> mutableStateOf('B')
+                'F' -> mutableStateOf('R')
+                'D' -> mutableStateOf('Y')
+                'L' -> mutableStateOf('G')
+                'B' -> mutableStateOf('O')
+                else -> mutableStateOf('X')
+            }
+        }.toTypedArray()
+    }.toTypedArray()
+}
+
+
 
 fun arrayOfColorToChar(array: Array<Array<MutableState<Color>>>): Array<Array<MutableState<Char>>> {
     return array.map { row ->
@@ -47,7 +64,7 @@ fun arrayOfColorToChar(array: Array<Array<MutableState<Color>>>): Array<Array<Mu
                 Color.Yellow -> mutableStateOf('D')
                 Color.Green -> mutableStateOf('L')
                 Color(0xFFFF9800) -> mutableStateOf('B')
-                else -> mutableStateOf('F')
+                else -> mutableStateOf('X')
             }
         }.toTypedArray()
     }.toTypedArray()
@@ -57,12 +74,12 @@ fun arrayOfCharColorToColor(array: Array<Array<MutableState<Char>>>): Array<Arra
     return array.map { row: Array<MutableState<Char>> ->
         row.map { colorState: MutableState<Char> ->
             when (colorState.value) {
-                'w' -> mutableStateOf(Color.White)
-                'b' -> mutableStateOf(Color.Blue)
-                'r' -> mutableStateOf(Color.Red)
-                'y' -> mutableStateOf(Color.Yellow)
-                'g' -> mutableStateOf(Color.Green)
-                'o' -> mutableStateOf(Color(0xFFFF9800)) // Orange
+                'W' -> mutableStateOf(Color.White)
+                'B' -> mutableStateOf(Color.Blue)
+                'R' -> mutableStateOf(Color.Red)
+                'Y' -> mutableStateOf(Color.Yellow)
+                'G' -> mutableStateOf(Color.Green)
+                'O' -> mutableStateOf(Color(0xFFFF9800)) // Orange
                 else -> mutableStateOf(Color.Gray)
             }
         }.toTypedArray()
@@ -95,12 +112,21 @@ inline fun <reified T>removeMutableState(face: Array<Array<MutableState<T>>>): A
     }.toTypedArray()
 }
 
+inline fun <reified T>addMutableState(grid: Array<Array<T>>): Array<Array<MutableState<T>>> {
+    return grid.map { row ->
+        row.map { t ->
+            mutableStateOf(t)
+        }.toTypedArray()
+    }.toTypedArray()
+}
+
 fun fillFace(face: Array<Char>): String {
-    return face.toMutableList() // Convertir a lista mutable
-    .apply {
-        while (size < 9) {
-            add('x') // Caracter con el que se rellena
+    return face.toMutableList()
+        .apply {
+            while (size < 9) {
+                add('X')
+            }
         }
-    }
-    .toTypedArray().joinToString("")
+        .chunked(3)
+        .joinToString("\n") { chunk -> chunk.joinToString(" ") }
 }
