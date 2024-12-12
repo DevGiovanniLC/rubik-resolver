@@ -77,7 +77,7 @@ class RubikSolverTest {
                 arrayOf('L', 'L', 'L'),
                 arrayOf('L', 'L', 'L')))
             .build()
-        print(cube.getFace(RubikCube.Face.BACK).flatten())
+        print(cube.getFace(RubikCube.Face.BACK.value).flatten())
         val solver = RubikSolver()
         val solution = solver.solveToString(cube)
         val solutionExpected = "R' "
@@ -105,7 +105,7 @@ class RubikSolverTest {
         assertEquals(stringCube,cube.toString())
 
         val solver = RubikSolver().solveToString(cube)
-        val solutionExpected = "R2 U2 B2 L2 F2 U' L2 R2 B2 R2 D  B2 F  L' F  U2 F' R' D' L2 R' "
+        val solutionExpected = "R2 U2 B2 L2 F2 U' L2 R2 B2 R2 D B2 F L' F U2 F' R' D' L2 R' "
         assertEquals(solutionExpected,solver)
     }
 

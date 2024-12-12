@@ -1,7 +1,5 @@
 package com.ulpgc.rubikresolver.model
 
-import com.ulpgc.rubikresolver.model.RubikCube.Face
-
 open class UncheckedRubikCube(private val cube: Array<Array<Array<Char>>>) {
 
     fun getFace(face: Int): Array<Array<Char>> {

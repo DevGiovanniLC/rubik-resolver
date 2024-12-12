@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ulpgc.rubikresolver.components.FaceGroup
@@ -45,6 +46,7 @@ class CheckCubeActivity : ComponentActivity() {
     @Preview(showBackground = true)
     @Composable
     fun MainComponent() {
+        val context = LocalContext.current
         Surface(color = Color(0xFF29A2FF)) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -55,13 +57,11 @@ class CheckCubeActivity : ComponentActivity() {
                 Spacer(modifier = Modifier.height(100.dp))
                 MainButton(
                     text = "Solve it!",
-                    onClick = { }
+                    onClick = { startActivity(Intent(context, SolverActivity::class.java)) }
                 )
             }
         }
     }
-
-
 
     @Composable
     fun RubikCross() {
@@ -91,7 +91,7 @@ class CheckCubeActivity : ComponentActivity() {
 
                 Row {
                     Spacer(modifier = Modifier.width(space))
-                    FaceGroup(colorArray = arrayOfCharToColors(upFace), tileModifier = Modifier.size(tileSize))
+                    FaceGroup(colorArray = arrayOfCharToColors(upFace), tileModifier = Modifier.size(tileSize), onClick = {goFace(RubikCube.Face.UP.value, upFace)})
                 }
 
                 // Fila central
