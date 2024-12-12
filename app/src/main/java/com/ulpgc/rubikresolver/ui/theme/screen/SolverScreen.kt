@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.ulpgc.rubikresolver.R
@@ -24,6 +25,7 @@ import com.ulpgc.rubikresolver.model.RubikCube
 import com.ulpgc.rubikresolver.opengl.renderer.SolverRenderer
 
 
+@Preview(showBackground = true)
 @Composable
 fun SolverScreen(cube: RubikCube) {
     val renderer = SolverRenderer(cube)
@@ -51,14 +53,17 @@ fun SolverScreen(cube: RubikCube) {
             horizontalArrangement = Arrangement.Center
         ) {
             ActionButton(
+                onClick = { renderer.firstMove() },
+                icon = R.drawable.arrow_collapse_left,
+                description = "first move"
+            )
+            ActionButton(
                 onClick = { renderer.previousMove() },
                 icon = R.drawable.arrow_left,
                 description = "previous move"
             )
             ActionButton(
-                onClick = {
-                    renderer.toggleAnimation()
-                },
+                onClick = { renderer.toggleAnimation() },
                 icon = R.drawable.play_pause,
                 description = "play/pause"
             )
@@ -66,6 +71,11 @@ fun SolverScreen(cube: RubikCube) {
                 onClick = { renderer.nextMove() },
                 icon = R.drawable.arrow_right,
                 description = "next move"
+            )
+            ActionButton(
+                onClick = { renderer.lastMove() },
+                icon = R.drawable.arrow_collapse_right,
+                description = "last move"
             )
         }
     }
@@ -80,7 +90,6 @@ fun ActionButton(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-        modifier = Modifier.padding(8.dp)
     ) {
         Image(
             painter = painterResource(id = icon),
