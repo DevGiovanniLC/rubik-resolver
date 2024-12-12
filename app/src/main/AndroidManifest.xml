@@ -19,34 +19,45 @@
         android:roundIcon="@mipmap/cubeicon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RubikResolver"
-        tools:targetApi="31">
+        >
         <activity
             android:name=".ErrorActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity"
             android:exported="false"
             android:label="@string/title_activity_error"
             android:theme="@style/Theme.RubikResolver" />
         <activity
             android:name=".SolverActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity"
             android:exported="false"
             android:label="@string/title_activity_check_cube"
             android:theme="@style/Theme.RubikResolver" />
         <activity
             android:name=".CheckCubeActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity"
             android:label="@string/title_activity_check_cube"
             android:theme="@style/Theme.RubikResolver" />
         <activity
             android:name=".CheckSideActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity"
             android:label="@string/title_activity_check_side"
             android:theme="@style/Theme.RubikResolver" />
         <activity
             android:name=".CameraActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity"
             android:exported="false"
             android:theme="@style/Theme.RubikResolver" />
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
+            tools:ignore="DiscouragedApi,LockedOrientationActivity"
             android:exported="true"
             android:theme="@style/Theme.RubikResolver">
             <intent-filter>
