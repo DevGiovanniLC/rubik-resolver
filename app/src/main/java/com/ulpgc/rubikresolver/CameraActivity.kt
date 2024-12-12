@@ -51,6 +51,7 @@ import org.opencv.imgproc.Imgproc
 
 @ExperimentalMaterial3Api
 class CameraActivity : ComponentActivity() {
+    private val detectedColors = mutableListOf<Char>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +116,8 @@ class CameraActivity : ComponentActivity() {
                     ) {
                         Button(
                             onClick = {
-                                // TODO: Implement button action
+                                val colors = detectedColors.take(9)
+                                println("Detected colors: $colors")
                             },
                             modifier = Modifier.size(50.dp),
                             shape = CircleShape,
@@ -184,7 +186,7 @@ class CameraActivity : ComponentActivity() {
         val sortedContours = mutableListOf<MatOfPoint>()
         for (contour in colorContours) {
             val area = Imgproc.contourArea(contour)
-            if (area < 4000 || area > 11000) continue
+            if (area < 4000 || area > 8000) continue
 
             val boundingRect = Imgproc.boundingRect(contour)
             val aspectRatio = boundingRect.width.toDouble() / boundingRect.height
@@ -194,11 +196,14 @@ class CameraActivity : ComponentActivity() {
         }
 
         var i = 0
+        detectedColors.clear()
         for (contour in sortedContours) {
             i++
             val rect = Imgproc.boundingRect(contour)
             val averageColor = getAverageColor(hsvImage, contour)
             val nearestColor = identifyColor(averageColor, colorRanges)
+
+            detectedColors.add(nearestColor)
 
             Imgproc.rectangle(
                 mat,
