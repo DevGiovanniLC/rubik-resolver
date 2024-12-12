@@ -1,9 +1,26 @@
-*.iml
+# Gradle files
+.gradle/
+build/
+!build.gradle
+!build.settings.gradle
+gradle-wrapper.jar
+gradle-wrapper.properties
 gradle
 /.idea
+*.iml
+
+# OS-specific files
 .DS_Store
-/build
+Thumbs.db
+
+# User-specific files
+*.log
+*.apk
+*.ap_
+
 /captures
 .externalNativeBuild
 .cxx
 local.properties
+opencv
+obj

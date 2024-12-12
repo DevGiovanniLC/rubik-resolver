@@ -9,7 +9,7 @@ import com.ulpgc.rubikresolver.services.javaRubikSolver.Search
 class RubikSolver : RubikCubeSolver {
     override fun solve(cube: RubikCube): List<String> {
         val string = solveToString(cube)
-        return string.split(" ")
+        return string.split(" ").filter { it != "" }
     }
 
     override fun solveToString(cube: RubikCube): String {
@@ -93,4 +93,14 @@ inline fun <reified T>removeMutableState(face: Array<Array<MutableState<T>>>): A
         row.map { charState: MutableState<T> -> charState.value }
             .toTypedArray()
     }.toTypedArray()
+}
+
+fun fillFace(face: Array<Char>): String {
+    return face.toMutableList() // Convertir a lista mutable
+    .apply {
+        while (size < 9) {
+            add('x') // Caracter con el que se rellena
+        }
+    }
+    .toTypedArray().joinToString("")
 }

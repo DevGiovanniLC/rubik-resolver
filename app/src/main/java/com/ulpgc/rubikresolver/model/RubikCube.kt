@@ -84,7 +84,7 @@ data class RubikCube private constructor (private val cube: Array<Array<Array<Ch
             return this
         }
 
-        internal fun buildUncheckedRubikCube(): UncheckedRubikCube {
+        private fun buildUncheckedRubikCube(): UncheckedRubikCube {
             return RubikCube(cube)
         }
 
@@ -101,7 +101,7 @@ data class RubikCube private constructor (private val cube: Array<Array<Array<Ch
 
 
 
-    enum class Face(val value: kotlin.Int) {
+    enum class Face(val value: Int) {
         UP(0),  // U ->  white
         RIGHT(1),   // R ->  blue
         FRONT(2),  // F -> red
