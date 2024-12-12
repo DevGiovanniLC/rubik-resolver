@@ -3,6 +3,7 @@ package com.ulpgc.rubikresolver.opengl.renderer
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
+import androidx.compose.runtime.mutableIntStateOf
 import com.ulpgc.rubikresolver.model.RubikCube
 import com.ulpgc.rubikresolver.model.RubikCube.Face.*
 import com.ulpgc.rubikresolver.opengl.objects.GLRubikCube
@@ -13,7 +14,6 @@ import javax.microedition.khronos.opengles.GL10
 
 class SolverRenderer(private val cube: RubikCube) : GLSurfaceView.Renderer {
     private var isPlayAnimationEnabled: Boolean = false
-    private lateinit var glCube: GLRubikCube
     private val viewMatrix = FloatArray(16)
     private val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
@@ -22,18 +22,24 @@ class SolverRenderer(private val cube: RubikCube) : GLSurfaceView.Renderer {
     private var animateCounterClockwise = 1
     private var rotationAngle = 0f
     private val solver = RubikSolver()
-    private lateinit var solutionMoves: List<String>
-    private var currentMoveIndex = 0
     private var appliedMove = ""
-    private lateinit var currentCube: RubikCube
+    private var currentCube: RubikCube
+    private lateinit var glCube: GLRubikCube
+
+    var solutionMoves: List<String>
+    val currentMoveIndex = mutableIntStateOf(0)
+
+    init {
+        solutionMoves = expandSolution(solver.solve(cube))
+        currentCube = RubikCube.RubikBuilder.stringToCube(cube.toString()).build()
+    }
+
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig?) {
         // Set the background frame color
         GLES20.glClearColor(0.157f, 0.627f, 1.0f, 1.0f)
         // Set the camera position (View matrix)
         Matrix.setLookAtM(viewMatrix, 0, 4.0f, 4.0f, 4.0f, 2.0f, 2.0f, 2.0f, 0f, 1.0f, 0f)
-        currentCube = RubikCube.RubikBuilder.stringToCube(cube.toString()).build()
         glCube = GLRubikCube(currentCube)
-        solutionMoves = expandSolution(solver.solve(currentCube))
     }
 
     private fun expandSolution(solve: List<String>): List<String> {
@@ -126,24 +132,24 @@ class SolverRenderer(private val cube: RubikCube) : GLSurfaceView.Renderer {
         if (isAnimationInProgress) {
             return
         }
-        if (currentMoveIndex >= solutionMoves.size) {
+        if (currentMoveIndex.intValue >= solutionMoves.size) {
             isPlayAnimationEnabled = false
             return
         }
         isAnimationInProgress = true
-        val move = solutionMoves[currentMoveIndex]
+        val move = solutionMoves[currentMoveIndex.intValue]
         performMove(move)
         appliedMove = move
-        currentMoveIndex++
+        currentMoveIndex.intValue++
     }
 
     fun previousMove() {
-        if (currentMoveIndex <= 0 || isAnimationInProgress) {
+        if (currentMoveIndex.intValue <= 0 || isAnimationInProgress) {
             return
         }
         isAnimationInProgress = true
-        currentMoveIndex--
-        val move = reverseMove(solutionMoves[currentMoveIndex])
+        currentMoveIndex.intValue--
+        val move = reverseMove(solutionMoves[currentMoveIndex.intValue])
         appliedMove = move
 
         performMove(move)
@@ -172,19 +178,19 @@ class SolverRenderer(private val cube: RubikCube) : GLSurfaceView.Renderer {
     }
 
     fun firstMove() {
-        if (currentMoveIndex <= 0 || isAnimationInProgress) {
+        if (currentMoveIndex.intValue <= 0 || isAnimationInProgress) {
             return
         }
-        currentMoveIndex = 0
+        currentMoveIndex.intValue = 0
         currentCube = RubikCube.RubikBuilder.stringToCube(cube.toString()).build()
         glCube.updateCube(currentCube)
     }
 
     fun lastMove() {
-        if (currentMoveIndex >= solutionMoves.size || isAnimationInProgress) {
+        if (currentMoveIndex.intValue >= solutionMoves.size || isAnimationInProgress) {
             return
         }
-        currentMoveIndex = solutionMoves.size
+        currentMoveIndex.intValue = solutionMoves.size
         val solvedCube = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB"
         currentCube = RubikCube.RubikBuilder.stringToCube(solvedCube).build()
         glCube.updateCube(currentCube)
