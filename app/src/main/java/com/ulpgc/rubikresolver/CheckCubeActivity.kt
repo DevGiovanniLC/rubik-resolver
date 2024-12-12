@@ -114,7 +114,7 @@ class CheckCubeActivity : ComponentActivity() {
         }
     }
 
-    fun goFace(cubeState: Int, cubeFace: Array<Array<Char>>) {
+    private fun goFace(cubeState: Int, cubeFace: Array<Array<Char>>) {
 
         val faceColor = faceToString(
             arrayOfCharPositionToCharColor(

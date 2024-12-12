@@ -13,7 +13,7 @@ class RubikSolver : RubikCubeSolver {
     }
 
     override fun solveToString(cube: RubikCube): String {
-        var stringCube = cube.toString()
+        val stringCube = cube.toString()
         val search = Search().solution(stringCube,  1000, 1000, 0, 0)
         return search.toString()
     }
@@ -24,11 +24,11 @@ fun arrayOfCharToColors(array: Array<Array<Char>>): Array<Array<MutableState<Col
     return array.map { row ->
         row.map { color ->
             when (color) {
-                'U' -> mutableStateOf(Color.White)
-                'R' -> mutableStateOf(Color.Blue)
+                'D' -> mutableStateOf(Color.White)
+                'L' -> mutableStateOf(Color.Blue)
                 'F' -> mutableStateOf(Color.Red)
-                'D' -> mutableStateOf(Color.Yellow)
-                'L' -> mutableStateOf(Color.Green)
+                'U' -> mutableStateOf(Color.Yellow)
+                'R' -> mutableStateOf(Color.Green)
                 'B' -> mutableStateOf(Color(0xFFFF9800))
                 else -> mutableStateOf(Color.Gray)
             }
@@ -40,11 +40,11 @@ fun arrayOfCharPositionToCharColor(array: Array<Array<MutableState<Char>>>): Arr
     return array.map { row ->
         row.map { charState ->
             when (charState.value) {
-                'U' -> mutableStateOf('W')
-                'R' -> mutableStateOf('B')
+                'D' -> mutableStateOf('W')
+                'L' -> mutableStateOf('B')
                 'F' -> mutableStateOf('R')
-                'D' -> mutableStateOf('Y')
-                'L' -> mutableStateOf('G')
+                'U' -> mutableStateOf('Y')
+                'R' -> mutableStateOf('G')
                 'B' -> mutableStateOf('O')
                 else -> mutableStateOf('X')
             }
@@ -58,11 +58,11 @@ fun arrayOfColorToChar(array: Array<Array<MutableState<Color>>>): Array<Array<Mu
     return array.map { row ->
         row.map { color ->
             when (color.value) {
-                Color.White -> mutableStateOf('U')
-                Color.Blue -> mutableStateOf('R')
+                Color.White -> mutableStateOf('D')
+                Color.Blue -> mutableStateOf('L')
                 Color.Red -> mutableStateOf('F')
-                Color.Yellow -> mutableStateOf('D')
-                Color.Green -> mutableStateOf('L')
+                Color.Yellow -> mutableStateOf('U')
+                Color.Green -> mutableStateOf('R')
                 Color(0xFFFF9800) -> mutableStateOf('B')
                 else -> mutableStateOf('X')
             }

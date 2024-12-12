@@ -13,16 +13,12 @@ class SolverActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val initialState = "DUUBULDBFRBFRRULLLBRDFFFBLURDBFDFDRFRULBLUFDURRBLBDUDL"
-        val rubikCube = RubikCube.RubikBuilder.stringToCube(initialState).build()
         setContent {
             var cube : RubikCube? = null
-            var isError = false
 
             try {
                 cube = RubikCube.RubikBuilder.build()
             }catch (e: Exception){
-                isError = true
                 startActivity(
                     Intent(this, ErrorActivity::class.java)
                         .putExtra("error", e.toString())

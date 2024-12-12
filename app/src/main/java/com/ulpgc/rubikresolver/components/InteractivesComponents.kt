@@ -65,7 +65,6 @@ fun MainButton(
 ) {
     val buttonShape = RoundedCornerShape(10.dp)
 
-
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier

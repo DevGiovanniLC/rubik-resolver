@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
@@ -65,8 +66,8 @@ class CameraActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        var cubeFace = Array(3) { Array(3) { mutableStateOf('F') }}
-        var cubeState = intent.getIntExtra("cubeState", 0)
+        val cubeFace = Array(3) { Array(3) { mutableStateOf('F') }}
+        val cubeState = intent.getIntExtra("cubeState", 0)
 
         enableEdgeToEdge()
         if (!hasRequiredPermissions()) {
@@ -74,12 +75,12 @@ class CameraActivity : ComponentActivity() {
         }
 
         setContent {
-            CameraScreen(cubeFace, cubeState)
+            CameraScreen(cubeState)
         }
     }
 
     @Composable
-    private fun CameraScreen(cubeFace: Array<Array<MutableState<Char>>>, cubeState: Int) {
+    private fun CameraScreen(cubeState: Int) {
         RubikResolverTheme {
             val scaffoldState = rememberBottomSheetScaffoldState()
             val processedBitmapState = remember { mutableStateOf<Bitmap?>(null) }
@@ -151,18 +152,19 @@ class CameraActivity : ComponentActivity() {
         val screenHeight = LocalConfiguration.current.screenHeightDp.dp
         var text = ""
         when(cubeState){
-            0 -> text = "Up Face"
-            1 -> text = "Right Face"
-            2 -> text = "Front Face"
-            3 -> text = "Down Face"
-            4 -> text = "Left Face"
-            5 -> text = "Back Face"
+            0 -> text = "Yellow Face\n(Red bottom)"
+            1 -> text = "Green Face\n(White bottom)"
+            2 -> text = "Red Face\n(White bottom)"
+            3 -> text = "White Face\n(Orange bottom)"
+            4 -> text = "Blue Face\n(White bottom)"
+            5 -> text = "Orange Face\n(White bottom)"
         }
         Text(
             text = text,
             style = TextStyle(
                 fontSize = 50.sp,
                 fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
                 color = Color.White,
                 shadow = Shadow(
                     color = Color.Black,
@@ -198,7 +200,7 @@ class CameraActivity : ComponentActivity() {
         return CAMERA_PERMISSIONS.all {
             ContextCompat.checkSelfPermission(
                 applicationContext,
-                it.toString()
+                it
             ) == PackageManager.PERMISSION_GRANTED
         }
     }
