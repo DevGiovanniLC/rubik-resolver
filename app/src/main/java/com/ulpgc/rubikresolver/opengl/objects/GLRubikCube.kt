@@ -7,7 +7,7 @@ import com.ulpgc.rubikresolver.model.RubikCube
 import com.ulpgc.rubikresolver.model.RubikCube.Face
 import com.ulpgc.rubikresolver.model.RubikCube.Face.*
 
-class GLRubikCube(private val rubikCubeModel: RubikCube) {
+class GLRubikCube(private var rubikCubeModel: RubikCube) {
     private val cubes: Array<Cube> = Array(27) { Cube() }
     private val glCubes: Array<GLCube> = Array(27) { GLCube(cubes[it]) }
     private var rotatingFace: Face? = null
@@ -61,6 +61,17 @@ class GLRubikCube(private val rubikCubeModel: RubikCube) {
             Matrix.multiplyMM(cubeMatrix, 0, cubeMatrix, 0, translationMatrix, 0)
             glCubes[i].draw(cubeMatrix)
         }
+    }
+
+    fun updateCube(rubikCubeModel: RubikCube) {
+        this.rubikCubeModel = rubikCubeModel
+        paintFace(FRONT) // Front face
+        paintFace(BACK)  // Back face
+        paintFace(LEFT)     // Left face
+        paintFace(RIGHT)    // Right face
+        paintFace(UP)      // Top face
+        paintFace(DOWN)   // Bottom face
+        rotatingAngle = 0f
     }
 
     private fun isCubeOnFace(face: Face, i: Int): Boolean {

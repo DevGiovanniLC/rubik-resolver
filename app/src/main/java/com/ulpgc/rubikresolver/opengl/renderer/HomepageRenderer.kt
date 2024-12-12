@@ -3,17 +3,15 @@ package com.ulpgc.rubikresolver.opengl.renderer
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
-import androidx.compose.runtime.mutableIntStateOf
 import com.ulpgc.rubikresolver.model.RubikCube
 import com.ulpgc.rubikresolver.model.RubikCube.Face.*
 import com.ulpgc.rubikresolver.opengl.objects.GLRubikCube
 import com.ulpgc.rubikresolver.services.RubikCubeMovement
-import com.ulpgc.rubikresolver.services.RubikSolver
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
+import kotlin.random.Random
 
-class SolverRenderer(private val cube: RubikCube) : GLSurfaceView.Renderer {
-    private var isPlayAnimationEnabled: Boolean = false
+class HomepageRenderer(cube: RubikCube) : GLSurfaceView.Renderer {
     private val viewMatrix = FloatArray(16)
     private val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
@@ -21,16 +19,12 @@ class SolverRenderer(private val cube: RubikCube) : GLSurfaceView.Renderer {
     private var animationFace = FRONT
     private var animateCounterClockwise = 1
     private var rotationAngle = 0f
-    private val solver = RubikSolver()
     private var appliedMove = ""
     private var currentCube: RubikCube
     private lateinit var glCube: GLRubikCube
-
-    var solutionMoves: List<String>
-    val currentMoveIndex = mutableIntStateOf(0)
+    private val legalMoves = arrayOf("F", "F'", "B", "B'", "L", "L'", "R", "R'", "U", "U'", "D", "D'")
 
     init {
-        solutionMoves = expandSolution(solver.solve(cube))
         currentCube = RubikCube.RubikBuilder.stringToCube(cube.toString()).build()
     }
 
@@ -38,22 +32,8 @@ class SolverRenderer(private val cube: RubikCube) : GLSurfaceView.Renderer {
         // Set the background frame color
         GLES20.glClearColor(0.157f, 0.627f, 1.0f, 1.0f)
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(viewMatrix, 0, 4.0f, 4.0f, 4.0f, 2.0f, 2.0f, 2.0f, 0f, 1.0f, 0f)
         glCube = GLRubikCube(currentCube)
-    }
-
-    private fun expandSolution(solve: List<String>): List<String> {
-        val expandedMoves = mutableListOf<String>()
-
-        for (move in solve) {
-            if (move.length == 1 || (move.length == 2) && move[1] == '\'') {
-                expandedMoves.add(move)
-                continue
-            }
-            expandedMoves.add(move.take(move.length - 1))
-            expandedMoves.add(move.take(move.length - 1))
-        }
-        return expandedMoves
+        randomMove()
     }
 
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
@@ -71,18 +51,27 @@ class SolverRenderer(private val cube: RubikCube) : GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT)
 
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(viewMatrix, 0, 3.0f, 2.7f, 3.0f, 1f, 1f, 1f, 0f, 1f, 0f)
+        Matrix.setLookAtM(viewMatrix, 0, 3.0f, 2.4f, 3.0f, 0f, 0f, 0f, 0f, 1f, 0f)
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
+
+        // Create a rotation for the cube
+        val rotationMatrix = FloatArray(16)
+        Matrix.setIdentityM(rotationMatrix, 0)
+        val angleInDegrees = System.currentTimeMillis() % 14400 / 40.0f
+        Matrix.rotateM(rotationMatrix, 0, angleInDegrees, -0.4f, 1f, -0.8f)
+
+        // Rotation Matrix
+        Matrix.multiplyMM(vPMatrix, 0, vPMatrix, 0, rotationMatrix, 0)
 
         animate()
         glCube.draw(vPMatrix)
     }
 
     private fun animate() {
-        if (isPlayAnimationEnabled && !isAnimationInProgress) {
-            nextMove()
+        if (!isAnimationInProgress) {
+            randomMove()
         }
         if (rotationAngle >= 90) {
             rotationAngle = 0f
@@ -128,71 +117,14 @@ class SolverRenderer(private val cube: RubikCube) : GLSurfaceView.Renderer {
         }
     }
 
-    fun nextMove() {
+    private fun randomMove() {
         if (isAnimationInProgress) {
             return
         }
-        if (currentMoveIndex.intValue >= solutionMoves.size) {
-            isPlayAnimationEnabled = false
-            return
-        }
         isAnimationInProgress = true
-        val move = solutionMoves[currentMoveIndex.intValue]
+        val randomIndex = Random.nextInt(legalMoves.size)
+        val move = legalMoves[randomIndex]
         performMove(move)
         appliedMove = move
-        currentMoveIndex.intValue++
-    }
-
-    fun previousMove() {
-        if (currentMoveIndex.intValue <= 0 || isAnimationInProgress) {
-            return
-        }
-        isAnimationInProgress = true
-        currentMoveIndex.intValue--
-        val move = reverseMove(solutionMoves[currentMoveIndex.intValue])
-        appliedMove = move
-
-        performMove(move)
-    }
-
-    private fun reverseMove(move: String): String {
-        return when (move) {
-            "F" -> "F'"
-            "F'" -> "F"
-            "B" -> "B'"
-            "B'" -> "B"
-            "L" -> "L'"
-            "L'" -> "L"
-            "R" -> "R'"
-            "R'" -> "R"
-            "U" -> "U'"
-            "U'" -> "U"
-            "D" -> "D'"
-            "D'" -> "D"
-            else -> ""
-        }
-    }
-
-    fun toggleAnimation() {
-        isPlayAnimationEnabled = !isPlayAnimationEnabled
-    }
-
-    fun firstMove() {
-        if (currentMoveIndex.intValue <= 0 || isAnimationInProgress) {
-            return
-        }
-        currentMoveIndex.intValue = 0
-        currentCube = RubikCube.RubikBuilder.stringToCube(cube.toString()).build()
-        glCube.updateCube(currentCube)
-    }
-
-    fun lastMove() {
-        if (currentMoveIndex.intValue >= solutionMoves.size || isAnimationInProgress) {
-            return
-        }
-        currentMoveIndex.intValue = solutionMoves.size
-        val solvedCube = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB"
-        currentCube = RubikCube.RubikBuilder.stringToCube(solvedCube).build()
-        glCube.updateCube(currentCube)
     }
 }

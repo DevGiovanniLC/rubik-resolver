@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ulpgc.rubikresolver.components.ColorPalette
@@ -40,10 +41,10 @@ class CheckSideActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        var cubeState = intent.getIntExtra("cubeState", 0)
-        var cubeFace = intent.getStringExtra("cubeFace")
-        var faceString = stringToMutableStateArray(cubeFace)
-        var faceColor = arrayOfCharColorToColor(faceString)
+        val cubeState = intent.getIntExtra("cubeState", 0)
+        val cubeFace = intent.getStringExtra("cubeFace")
+        val faceString = stringToMutableStateArray(cubeFace)
+        val faceColor = arrayOfCharColorToColor(faceString)
         enableEdgeToEdge()
         setContent {
             MainComponent(faceColor, cubeState)
@@ -54,7 +55,6 @@ class CheckSideActivity : ComponentActivity() {
     @Composable
     fun MainComponent(array: Array<Array<MutableState<Color>>>, cubeState: Int = 0) {
         var selectedColor by remember { mutableStateOf(Color.Red) }
-        var faceColor = array
 
         //val screenWidth = LocalConfiguration.current.screenWidthDp.dp
         val screenHeight = LocalConfiguration.current.screenHeightDp.dp
@@ -73,7 +73,11 @@ class CheckSideActivity : ComponentActivity() {
 
                 val context = LocalContext.current
                 FaceText(cubeState)
-                FaceButtonGroup(colorArray = faceColor, tileModifier = Modifier.size(screenHeight * 0.08f) ,selectedColor = selectedColor)
+                FaceButtonGroup(
+                    colorArray = array,
+                    tileModifier = Modifier.size(screenHeight * 0.08f),
+                    selectedColor = selectedColor
+                )
                 ColorPalette(onColorSelected = { color ->
                     selectedColor = color
                 })
@@ -89,7 +93,8 @@ class CheckSideActivity : ComponentActivity() {
                         )
                     })
                     IconButton(R.drawable.check, 90.dp, onClick = {
-                        RubikCube.RubikBuilder.setFace(cubeState, removeMutableState(arrayOfColorToChar(faceColor)))
+                        RubikCube.RubikBuilder.setFace(cubeState, removeMutableState(
+                            arrayOfColorToChar(array)))
                         if (cubeState == RubikCube.Face.BACK.value) {
                             startActivity(
                                 Intent(context, CheckCubeActivity::class.java)
@@ -117,18 +122,19 @@ class CheckSideActivity : ComponentActivity() {
     fun FaceText(cubeState : Int){
         var text = ""
         when(cubeState){
-            0 -> text = "Up Face"
-            1 -> text = "Right Face"
-            2 -> text = "Front Face"
-            3 -> text = "Down Face"
-            4 -> text = "Left Face"
-            5 -> text = "Back Face"
+            0 -> text = "Yellow Face\n(Red bottom)"
+            1 -> text = "Green Face\n(White bottom)"
+            2 -> text = "Red Face\n(White bottom)"
+            3 -> text = "White Face\n(Orange bottom)"
+            4 -> text = "Blue Face\n(White bottom)"
+            5 -> text = "Orange Face\n(White bottom)"
         }
         Text(
             text = text,
             style = TextStyle(
-                fontSize = 50.sp,
+                fontSize = 40.sp,
                 fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
                 color = Color.White,
                 shadow = Shadow(
                     color = Color.Black,

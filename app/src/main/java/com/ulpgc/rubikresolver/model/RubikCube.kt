@@ -1,6 +1,6 @@
 package com.ulpgc.rubikresolver.model
 
-data class RubikCube private constructor (private val cube: Array<Array<Array<Char>>>):
+data class RubikCube private constructor(private val cube: Array<Array<Array<Char>>>) :
     UncheckedRubikCube(cube) {
 
     override fun toString(): String {
@@ -14,7 +14,7 @@ data class RubikCube private constructor (private val cube: Array<Array<Array<Ch
     object RubikBuilder {
         private var cube: Array<Array<Array<Char>>> = Array(6) { Array(3) { Array(3) { ' ' } } }
 
-        fun setFace(faceName: Int, faceValue: Array<Array<Char>>): RubikBuilder{
+        fun setFace(faceName: Int, faceValue: Array<Array<Char>>): RubikBuilder {
 
             if (faceValue.size != 3 || faceValue[0].size != 3) {
                 throw RubikFaceError("Face value must be a 3x3 array")
@@ -93,13 +93,19 @@ data class RubikCube private constructor (private val cube: Array<Array<Array<Ch
 
 
             RubikCubeChecker(buildUncheckedRubikCube())
-
-
-            return RubikCube(cube)
+            cube.forEach { face ->
+                if (face.any { row -> row.any { it == ' ' } }) {
+                    throw RubikCubeError("One or more faces contain empty values or null")
+                }
+            }
+            val deepCopy = Array(cube.size) { i ->
+                Array(cube[i].size) { j ->
+                    cube[i][j].copyOf()
+                }
+            }
+            return RubikCube(deepCopy)
         }
     }
-
-
 
     enum class Face(val value: Int) {
         UP(0),  // U ->  white

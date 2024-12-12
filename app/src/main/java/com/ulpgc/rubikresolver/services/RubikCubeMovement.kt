@@ -793,9 +793,9 @@ class RubikCubeMovement {
                         down[0],
                         down[1],
                         arrayOf(
-                            right[0][2],
-                            right[1][2],
                             right[2][2],
+                            right[1][2],
+                            right[0][2],
                         ),
                     ))
                     .setFace(RIGHT.value, arrayOf(
