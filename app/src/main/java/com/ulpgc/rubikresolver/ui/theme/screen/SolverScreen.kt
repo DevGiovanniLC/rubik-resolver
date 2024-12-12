@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -37,10 +38,17 @@ import kotlin.math.max
 import kotlin.math.min
 
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun SolverScreen() {
-    val renderer = SolverRenderer(mockCube)
+fun PreviewSolverScreen() {
+    val solvedCube: String = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB"
+    val cube = RubikCube.RubikBuilder.stringToCube(solvedCube).build()
+    SolverScreen(cube)
+}
+
+@Composable
+fun SolverScreen(cube: RubikCube) {
+    val renderer = SolverRenderer(cube)
     val currentSolutionIndex: MutableIntState = remember { renderer.currentMoveIndex }
     val solutionMoves: List<String> = remember { renderer.solutionMoves }
 
@@ -207,7 +215,3 @@ fun OpenGLCanvas(renderer: SolverRenderer, modifier: Modifier) {
     }
 }
 
-const val stringCube = "DUUBULDBFRBFRRULLLBRDFFFBLURDBFDFDRFRULBLUFDURRBLBDUDL"
-val mockCube = RubikCube.RubikBuilder
-    .stringToCube(stringCube)
-    .build()

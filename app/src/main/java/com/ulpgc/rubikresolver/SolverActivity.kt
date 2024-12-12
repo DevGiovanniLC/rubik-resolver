@@ -12,6 +12,9 @@ class SolverActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        val initialState = "DUUBULDBFRBFRRULLLBRDFFFBLURDBFDFDRFRULBLUFDURRBLBDUDL"
+        val rubikCube = RubikCube.RubikBuilder.stringToCube(initialState).build()
         setContent {
             var cube : RubikCube? = null
             var isError = false
