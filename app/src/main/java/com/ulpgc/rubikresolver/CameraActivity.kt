@@ -1,6 +1,7 @@
 package com.ulpgc.rubikresolver
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Matrix
@@ -14,18 +15,16 @@ import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -33,12 +32,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.ulpgc.rubikresolver.components.CameraPreview
+import com.ulpgc.rubikresolver.components.IconButton
+import com.ulpgc.rubikresolver.services.fillFace
 import com.ulpgc.rubikresolver.ui.theme.RubikResolverTheme
 import org.opencv.android.Utils
 import org.opencv.core.Core
@@ -54,19 +62,24 @@ class CameraActivity : ComponentActivity() {
     private val detectedColors = mutableListOf<Char>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+
+        var cubeFace = Array(3) { Array(3) { mutableStateOf('F') }}
+        var cubeState = intent.getIntExtra("cubeState", 0)
+
         enableEdgeToEdge()
         if (!hasRequiredPermissions()) {
             ActivityCompat.requestPermissions(this, CAMERA_PERMISSIONS, 0)
         }
 
         setContent {
-            CameraScreen()
+            CameraScreen(cubeFace, cubeState)
         }
     }
 
     @Composable
-    private fun CameraScreen() {
+    private fun CameraScreen(cubeFace: Array<Array<MutableState<Char>>>, cubeState: Int) {
         RubikResolverTheme {
             val scaffoldState = rememberBottomSheetScaffoldState()
             val processedBitmapState = remember { mutableStateOf<Bitmap?>(null) }
@@ -79,56 +92,87 @@ class CameraActivity : ComponentActivity() {
                     }
                 }
             }
-
+            val screenHeight = LocalConfiguration.current.screenHeightDp.dp
             BottomSheetScaffold(
                 scaffoldState = scaffoldState,
                 sheetPeekHeight = 0.dp,
                 sheetContent = {}
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
 
-                    CameraPreview(
-                        controller = controller,
-                        modifier = Modifier
-                            .fillMaxSize()
-                    )
-
-                    processedBitmapState.value?.let { bitmap ->
-                        Image(
-                            bitmap.asImageBitmap(),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 100.dp)
-                            .height(100.dp)
-                            .width(100.dp),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Button(
-                            onClick = {
-                                val colors = detectedColors.take(9)
-                                println("Detected colors: $colors")
-                            },
-                            modifier = Modifier.size(50.dp),
-                            shape = CircleShape,
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                Surface(color = Color(0xFF29A2FF), modifier = Modifier.fillMaxSize()) {
+                    Column (modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(50.dp)) {
+                        FaceText(cubeState)
+                        Box(
+                            modifier = Modifier
+                                .size(screenHeight * 0.6f),
+                            contentAlignment = Alignment.Center
                         ) {
 
+                            CameraPreview(
+                                controller = controller,
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                            )
+
+                            processedBitmapState.value?.let { bitmap ->
+                                Image(
+                                    bitmap.asImageBitmap(),
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+
+                        }
+                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                            val context = LocalContext.current
+                            IconButton(R.drawable.camera, 70.dp, onClick = {
+                                val colors = detectedColors.take(9)
+                                val stringFace = fillFace(colors.toTypedArray())
+
+                                startActivity(
+                                    Intent(context, CheckSideActivity::class.java)
+                                        .putExtra("cubeState", cubeState)
+                                        .putExtra("cubeFace", stringFace)
+                                )
+                            })
+
+                            IconButton(R.drawable.edit, 70.dp, onClick = {
+                                startActivity(Intent(context, CheckCubeActivity::class.java))
+                            })
                         }
                     }
                 }
             }
         }
+    }
+
+    @Composable
+    private fun FaceText(cubeState : Int){
+        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+        var text = ""
+        when(cubeState){
+            0 -> text = "Up Face"
+            1 -> text = "Right Face"
+            2 -> text = "Front Face"
+            3 -> text = "Down Face"
+            4 -> text = "Left Face"
+            5 -> text = "Back Face"
+        }
+        Text(
+            text = text,
+            style = TextStyle(
+                fontSize = 50.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                shadow = Shadow(
+                    color = Color.Black,
+                    offset = Offset(3f, 3f),
+                    blurRadius = 4f
+                ),
+                background = Color.Transparent
+            ),
+            modifier = Modifier.padding(top = screenHeight * 0.1f)
+        )
     }
 
     private fun processImageProxy(
@@ -149,11 +193,12 @@ class CameraActivity : ComponentActivity() {
     }
 
 
+
     private fun hasRequiredPermissions(): Boolean {
         return CAMERA_PERMISSIONS.all {
             ContextCompat.checkSelfPermission(
                 applicationContext,
-                it
+                it.toString()
             ) == PackageManager.PERMISSION_GRANTED
         }
     }

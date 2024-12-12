@@ -25,8 +25,8 @@ import com.ulpgc.rubikresolver.opengl.renderer.SolverRenderer
 
 
 @Composable
-fun SolverScreen() {
-    val renderer = SolverRenderer(mockCube)
+fun SolverScreen(cube: RubikCube) {
+    val renderer = SolverRenderer(cube)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -89,7 +89,4 @@ fun ActionButton(
     }
 }
 
-const val stringCube = "DUUBULDBFRBFRRULLLBRDFFFBLURDBFDFDRFRULBLUFDURRBLBDUDL"
-val mockCube = RubikCube.RubikBuilder
-    .stringToCube(stringCube)
-    .build()
+

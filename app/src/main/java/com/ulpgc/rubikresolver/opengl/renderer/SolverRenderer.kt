@@ -3,6 +3,7 @@ package com.ulpgc.rubikresolver.opengl.renderer
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
+import android.util.Log
 import com.ulpgc.rubikresolver.model.RubikCube
 import com.ulpgc.rubikresolver.model.RubikCube.Face.*
 import com.ulpgc.rubikresolver.opengl.objects.GLRubikCube
@@ -31,6 +32,7 @@ class SolverRenderer(private var cube: RubikCube) : GLSurfaceView.Renderer {
         // Set the camera position (View matrix)
         Matrix.setLookAtM(viewMatrix, 0, 4.0f, 4.0f, 4.0f, 2.0f, 2.0f, 2.0f, 0f, 1.0f, 0f)
         glCube = GLRubikCube(cube)
+        Log.d("SOLVE", solver.solve(cube).toString())
         solutionMoves = expandSolution(solver.solve(cube))
     }
 

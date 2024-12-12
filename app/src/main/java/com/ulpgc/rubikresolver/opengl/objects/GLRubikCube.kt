@@ -104,7 +104,7 @@ class GLRubikCube(private val rubikCubeModel: RubikCube) {
 
     private fun paintFace(face: Face) {
         val faceCubes = getCubeModelsFromFace(face)
-        val faceColors = rubikCubeModel.getFace(face).flatten()
+        val faceColors = rubikCubeModel.getFace(face.value).flatten()
         for ((cube, charColor) in faceCubes.zip(faceColors)) {
             when (face) {
                 FRONT -> cube.frontColor = toColor(charColor)

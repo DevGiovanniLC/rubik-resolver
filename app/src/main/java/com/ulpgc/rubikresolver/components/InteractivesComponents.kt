@@ -87,7 +87,7 @@ fun IconButton(image:Int = R.drawable.gear,  imageSize: Dp = 70.dp,onClick: () -
     val buttonShape = CircleShape
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(imageSize)
             .border(width = 2.dp, color = Color.Black, shape = buttonShape) // Aplica borde circular
     ) {
@@ -95,7 +95,7 @@ fun IconButton(image:Int = R.drawable.gear,  imageSize: Dp = 70.dp,onClick: () -
             onClick = onClick,
             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             shape = buttonShape,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(0.dp)
         ) {
@@ -189,7 +189,7 @@ fun FaceButtonGroup(
 @Composable
 fun FaceGroup(
     colorArray: Array<Array<MutableState<Color>>>,
-    onTileClicked: () -> Unit = {},
+    onClick: () -> Unit = {},
     tileModifier: Modifier = Modifier,
 ) {
 
@@ -204,7 +204,7 @@ fun FaceGroup(
                         color = cell.value,
                         modifier = tileModifier,
                         onClick = {
-                            onTileClicked()
+                            onClick()
                         }
                     )
 
