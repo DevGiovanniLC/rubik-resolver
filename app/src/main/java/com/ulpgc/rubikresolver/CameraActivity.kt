@@ -47,7 +47,6 @@ import org.opencv.core.Mat
 import org.opencv.core.MatOfPoint
 import org.opencv.core.Point
 import org.opencv.core.Scalar
-import org.opencv.core.Size
 import org.opencv.imgproc.Imgproc
 
 @ExperimentalMaterial3Api
@@ -163,13 +162,12 @@ class CameraActivity : ComponentActivity() {
 
     private fun processRubikCubeFace(bitmap: Bitmap): Bitmap {
         val colorRanges = mapOf(
-            'r' to Pair(Scalar(130.0, 120.0, 70.0), Scalar(180.0, 255.0, 255.0)),  // Red
-            'R' to Pair(Scalar(0.0, 120.0, 70.0), Scalar(8.0, 255.0, 255.0)),  // Red
-            'G' to Pair(Scalar(45.0, 100.0, 70.0), Scalar(80.0, 255.0, 255.0)), // Green
-            'B' to Pair(Scalar(84.0, 150.0, 0.0), Scalar(130.0, 255.0, 255.0)), // Blue
-            'Y' to Pair(Scalar(25.0, 100.0, 100.0), Scalar(44.0, 255.0, 255.0)), // Yellow
-            'O' to Pair(Scalar(8.0, 100.0, 20.0), Scalar(24.0, 255.0, 255.0)),  // Orange
-            'W' to Pair(Scalar(0.0, 0.0, 140.0), Scalar(180.0, 40.0, 255.0)),     // White
+            'O' to Pair(Scalar(8.0, 160.0, 150.0), Scalar(24.0, 255.0, 255.0)),  // Orange
+            'R' to Pair(Scalar(0.0, 170.0, 150.0), Scalar(5.0, 255.0, 255.0)),  // Red
+            'G' to Pair(Scalar(45.0, 200.0, 150.0), Scalar(80.0, 255.0, 255.0)), // Green
+            'B' to Pair(Scalar(84.0, 150.0, 150.0), Scalar(130.0, 255.0, 255.0)), // Blue
+            'Y' to Pair(Scalar(25.0, 180.0, 150.0), Scalar(44.0, 255.0, 255.0)), // Yellow
+            'W' to Pair(Scalar(0.0, 0.0, 100.0), Scalar(180.0, 50.0, 255.0)),     // White
         )
 
         val mat = Mat()
@@ -179,8 +177,8 @@ class CameraActivity : ComponentActivity() {
 
         val colorContours = mutableListOf<MatOfPoint>()
 
-        for ((_, hsv) in colorRanges) {
-            colorContours.addAll(findContours(hsvImage, hsv))
+        for ((color, hsv) in colorRanges) {
+            colorContours.addAll(findContours(hsvImage, hsv, color))
         }
 
         val sortedContours = mutableListOf<MatOfPoint>()
@@ -224,13 +222,24 @@ class CameraActivity : ComponentActivity() {
         return resultBitmap
     }
 
-    private fun findContours(hsvImage: Mat, hsvColor: Pair<Scalar, Scalar>): List<MatOfPoint> {
+    private fun findContours(
+        hsvImage: Mat,
+        hsvColor: Pair<Scalar, Scalar>,
+        color: Char
+    ): List<MatOfPoint> {
         val mask = Mat()
         Core.inRange(hsvImage, hsvColor.first, hsvColor.second, mask)
 
-        val kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, Size(5.0, 5.0))
-        Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_CLOSE, kernel)
-        Imgproc.morphologyEx(mask, mask, Imgproc.MORPH_OPEN, kernel)
+        if (color == 'R') {
+            val redMask = Mat()
+            Core.inRange(
+                hsvImage,
+                Scalar(150.0, 170.0, 100.0),
+                Scalar(180.0, 255.0, 255.0),
+                redMask
+            )
+            Core.add(mask, redMask, mask)
+        }
 
         val contours = mutableListOf<MatOfPoint>()
         Imgproc.findContours(
@@ -264,15 +273,7 @@ class CameraActivity : ComponentActivity() {
     }
 
     private fun identifyColor(color: Scalar, colors: Map<Char, Pair<Scalar, Scalar>>): Char {
-        var determinedColor = ' '
-
-        if (color.`val`[1] > 0 && color.`val`[1] < 40) {
-            return 'W'
-        }
-
-        if (color.`val`[0] > 130) {
-            return 'R'
-        }
+        var determinedColor = 'R'
 
         for ((key, value) in colors) {
             val isInHueRange =
