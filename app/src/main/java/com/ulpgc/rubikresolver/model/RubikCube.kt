@@ -103,6 +103,7 @@ data class RubikCube private constructor(private val cube: Array<Array<Array<Cha
                     cube[i][j].copyOf()
                 }
             }
+            reset()
             return RubikCube(deepCopy)
         }
     }

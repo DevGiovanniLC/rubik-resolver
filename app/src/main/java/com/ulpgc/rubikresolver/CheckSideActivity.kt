@@ -64,12 +64,9 @@ class CheckSideActivity : ComponentActivity() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(50.dp),
                 modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxSize()
                     .padding(top = screenHeight * 0.1f)
+                    .fillMaxSize()
             ) {
-
-
 
                 val context = LocalContext.current
                 FaceText(cubeState)
@@ -132,7 +129,7 @@ class CheckSideActivity : ComponentActivity() {
         Text(
             text = text,
             style = TextStyle(
-                fontSize = 40.sp,
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 color = Color.White,

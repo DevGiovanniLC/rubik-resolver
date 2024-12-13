@@ -105,14 +105,16 @@ class CameraActivity : ComponentActivity() {
                         FaceText(cubeState)
                         Box(
                             modifier = Modifier
-                                .size(screenHeight * 0.6f),
+                                .size(screenHeight * 0.5f)
+                                .padding(top = screenHeight * 0.1f),
                             contentAlignment = Alignment.Center
                         ) {
 
                             CameraPreview(
                                 controller = controller,
                                 modifier = Modifier
-                                    .fillMaxSize(),
+                                    .fillMaxSize()
+
                             )
 
                             processedBitmapState.value?.let { bitmap ->
@@ -124,7 +126,7 @@ class CameraActivity : ComponentActivity() {
                             }
 
                         }
-                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                        Row(modifier = Modifier.fillMaxWidth().padding(top = screenHeight * 0.08f), horizontalArrangement = Arrangement.SpaceEvenly) {
                             val context = LocalContext.current
                             IconButton(R.drawable.camera, 70.dp, onClick = {
                                 val colors = detectedColors.take(9)
@@ -162,7 +164,7 @@ class CameraActivity : ComponentActivity() {
         Text(
             text = text,
             style = TextStyle(
-                fontSize = 50.sp,
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 color = Color.White,
