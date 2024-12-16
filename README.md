@@ -5,20 +5,6 @@
 
 2024-12-14
 
-[**1\. Introducción**](#introducción)
-
-[**2\. Objetivos**](#objetivos)
-
-[**3\. Diseño**](#diseño)
-
-[**4\. Arquitectura**](#arquitectura)
-
-[**5\. Funcionalidades**](#funcionalidades)
-
-[**6\. Conclusiones**](#conclusiones)
-
-
-
 ## 1. Introducción
 
 La Aplicación a presentar en este documento es Rubik Solver. Una aplicación para resolver cubos de Rubik 3x3 independientemente de su distribución de colores.
@@ -71,7 +57,7 @@ En cuanto a las activities de editor de cara y visualización del cubo, fueron c
 ![image](https://github.com/user-attachments/assets/add3273e-a29c-4ce9-acf4-7af48940afbf)
 
 
-##  4.  Arquitectura  {#arquitectura}
+##  4.  Arquitectura
 
 Para el desarrollo de la aplicación se ha utilizado la arquitectura MVVM (Model-View-ViewModel).
 
@@ -95,9 +81,9 @@ ViewModel actúa como intermediario entre vista y modelo. Asegura que los datos 
 
 -**SolverRenderer:**
 
-	Esta clase guarda el estado actual del cubo y se vincula a un Composable de Jetpack Compose, haciendo uso de la función **remember**, con esto se logra una sincronización entre la vista y el modelo.
+Esta clase guarda el estado actual del cubo y se vincula a un Composable de Jetpack Compose, haciendo uso de la función **remember**, con esto se logra una sincronización entre la vista y el modelo.
 
-## 5.   Funcionalidades {#funcionalidades}
+## 5.   Funcionalidades
 
 ### Captura y reconocimiento del cubo
 
@@ -111,7 +97,7 @@ A partir del estado inicial del cubo de Rubik capturado mediante la cámara del 
 
 Una vez calculada la solución del cubo de Rubik, el usuario puede visualizar cada uno de los movimientos necesarios para resolverlo, facilitando el seguimiento paso a paso. Estas animaciones están implementadas utilizando **OpenGL**, un potente motor gráfico que permite renderizar animaciones en 3D con gran fluidez. Gracias a OpenGL, se pueden realizar rotaciones precisas en distintos ejes, cambiar perspectivas y ofrecer una experiencia visual interactiva y dinámica, lo que mejora significativamente la comprensión de los movimientos y la interacción con la solución.
 
-## 6.  Conclusiones {#conclusiones}
+## 6.  Conclusiones
 
 Este programa ofrece una solución práctica y eficiente para resolver un cubo de Rubik de forma asistida. A través del uso de la cámara del dispositivo, se captura y analiza el estado inicial del cubo utilizando técnicas de procesamiento de imágenes con OpenCV. Posteriormente, se aplica el algoritmo de Kociemba, que garantiza una solución óptima en 20 movimientos o menos. Finalmente, se presenta al usuario una animación interactiva en 3D, implementada con OpenGL, que muestra cada paso necesario para resolver el cubo.
 
